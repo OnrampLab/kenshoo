@@ -83,9 +83,7 @@ class Upload
             $tableIndex = array();
             while (($rows = fgetcsv($handle, 20000, ",")) !== FALSE) {
                 if($rows[0] != 'date'){
-                    $rows[0] = date("m/d/Y", time());
-                    if(substr($rows[0], 0, 1) == '0')
-                        $rows[0] = substr($rows[0], 1);
+                    $rows[0] = date("n/j/Y", time());
                 }
                 array_push($output, $rows);
             }
