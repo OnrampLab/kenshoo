@@ -60,6 +60,7 @@ class Upload
     public function renameFile($fileName, $dir)
     {
         $dateFormat = date('Y-m-d',time());
+        $dateFormat = date('Y-m-d', strtotime($dateFormat . ' - 1 day'));
         $newName = 'SimplyBridal-UC_File-' . $dateFormat . '.csv';
         copy($dir . '/' . $fileName, $dir . '/' . $newName);
         echo $newName . ' ';
@@ -84,6 +85,7 @@ class Upload
             while (($rows = fgetcsv($handle, 20000, ",")) !== FALSE) {
                 if($rows[0] != 'date'){
                     $rows[0] = date("n/j/Y", time());
+                    $rows[0] = date('n/j/Y', strtotime($rows[0] . ' - 1 day'));
                 }
                 array_push($output, $rows);
             }
