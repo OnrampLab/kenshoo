@@ -1,17 +1,22 @@
 <?php
 #!/usr/bin/php -q
-/*
-ini_set('display_errors', 1);
-error_reporting(E_ALL ^ E_NOTICE);
+if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
+     '203.75.167.229' !== $_SERVER['REMOTE_ADDR'] )
+{
+    exit;
+}
+
+error_reporting(E_ALL);
+ini_set('html_errors','On');
+ini_set('display_errors','On');
 ini_set('memory_limit', '2048M');
 ini_set('max_execution_time', 1200);
-*/
+
+require_once 'config.php';
 require_once 'vendor/autoload.php';
 require_once 'library/Facebook.php';
-
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
-require_once 'config.php';
 cron();
 
 
