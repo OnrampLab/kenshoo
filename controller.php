@@ -6,6 +6,8 @@ if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
     exit;
 }
 
+date_default_timezone_set('Europe/London');
+
 error_reporting(E_ALL);
 ini_set('html_errors','On');
 ini_set('display_errors','On');
