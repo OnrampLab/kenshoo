@@ -1,12 +1,16 @@
 <?php
 #!/usr/bin/php -q
-/*ini_set('display_errors', 1);
+/*
+ini_set('display_errors', 1);
 error_reporting(E_ALL ^ E_NOTICE);
 ini_set('memory_limit', '2048M');
-ini_set('max_execution_time', 1200);*/
+ini_set('max_execution_time', 1200);
+*/
+require_once 'vendor/autoload.php';
+require_once 'library/Facebook.php';
+
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
-//require_once 'googleHelper.php';
 require_once 'config.php';
 cron();
 
@@ -27,7 +31,8 @@ function cron()
     $fileName = $upload->getFile($uploadDir);
     if($fileName){
         $uploadFile = $upload->renameFile($fileName, $uploadDir);
-        $result = $upload->ftpUpload($uploadFile);
+        //$result = $upload->ftpUpload($uploadFile);
+        $result = false;
         if($result){
             $upload->backupFile($uploadFile, $backupDir);
             echo 'done.';

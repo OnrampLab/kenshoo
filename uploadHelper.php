@@ -51,6 +51,7 @@ class Upload
             closedir($handle);
         }
         $this->updateUploadCsv($fileName);
+        $this->updateCsvAboutFacebook($fileName);
         return $fileName;
     }
     
@@ -97,4 +98,11 @@ class Upload
         }
         fclose($fp);
     }
+
+    protected function updateCsvAboutFacebook($fileName)
+    {
+        $fb = new Facebook(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
+        $fb->process();
+    }
+
 }
