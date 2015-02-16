@@ -1,9 +1,12 @@
 <?php
 #!/usr/bin/php -q
-if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
-     '203.75.167.229' !== $_SERVER['REMOTE_ADDR'] )
-{
-    exit;
+
+if (PHP_SAPI !== 'cli') {
+    if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
+         '203.75.167.229' !== $_SERVER['REMOTE_ADDR'] )
+    {
+        exit;
+    }
 }
 
 date_default_timezone_set('Europe/London');
