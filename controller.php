@@ -17,9 +17,11 @@ ini_set('display_errors','On');
 ini_set('memory_limit', '2048M');
 ini_set('max_execution_time', 1200);
 
+session_start();
 require_once 'config.php';
 require_once 'vendor/autoload.php';
-require_once 'library/Facebook.php';
+require_once 'library/Log.php';
+require_once 'library/Fb.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
 cron();

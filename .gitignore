@@ -1,4 +1,4 @@
 config.php
-log.log
+*.log
 /upload
 composer.lock

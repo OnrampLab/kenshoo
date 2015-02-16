@@ -101,7 +101,7 @@ class Upload
 
     protected function updateCsvAboutFacebook($fileName)
     {
-        $fb = new Facebook(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
+        $fb = new Fb(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
         $fb->process();
     }
 
