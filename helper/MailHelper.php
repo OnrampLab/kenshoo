@@ -32,7 +32,7 @@ class MailHelper
     private static function send($subject, $body)
     {
         $mail = new Message;
-        $mail->setFrom('Debug Messager <localhost@localhost.com>')
+        $mail->setFrom('kenshoo upload status <localhost@localhost.com>')
             ->addTo('lawrence@lngmgmt.com')
             ->addTo('Davidc@lngmgmt.com')
             ->addTo('chris.tou@simplybridal.com')
