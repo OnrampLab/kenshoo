@@ -37,50 +37,6 @@ class Fb
             die('error!');
         }
 
-/*
-//print_r($session);
-echo $session->getAccessToken();
-//$request = new FacebookRequest($session, 'GET', '/me/accounts?fields=name,access_token,perms');
-$request = new FacebookRequest($session, 'GET', '/me');
-//print_r($request);
-print_r(get_class_methods($request));
-$response = $request->execute();
-print_r($response);
-echo '------------------';
-*/
-
-        // graph api request for user data
-        /*
-        $request = new FacebookRequest( $session, 'GET', '/me' );
-        
-        */
-
-        /*
-        // get response
-        $graphObject = $response->getGraphObject();
-   
-        // print data
-        echo  print_r( $graphObject, 1 );
-        */
-
-
-/*
-        $helper = new FacebookRedirectLoginHelper('http://www.simplybridal.com/', $this->id, $this->secret );
-print_r($helper);
-print_r(get_class_methods($helper));
-        echo '<a href="' . $helper->getLoginUrl() . '">Login with Facebook</a>';
-*/
-
-/*
-        try {
-            $helper = new FacebookRedirectLoginHelper('/', $this->id, $this->secret );
-          //$helper = new FacebookRedirectLoginHelper('/');
-        }
-        catch( Exception $e) {
-            echo '<pre>';
-            print_r($e);
-        }
-*/
 
 
         /*
@@ -94,28 +50,73 @@ print_r(get_class_methods($helper));
         $graphObject = $response->getGraphObject();
         */
 
-        Api::init( $this->id, $this->secret, $session->getAccessToken() );
+
+        // $token = $session->getAccessToken();
+        $token = APPLICATION_FACEBOOK_LONG_TOKEN;
+        Api::init( $this->id, $this->secret, $token );
         $api = Api::instance();
 
 /*
-        $account = new AdAccount('act_112950872167640');
 
+// 取得 ???? 之後的 code
+curl -G \
+-d "client_id=369227659923524" \
+-d "client_secret=原本的code" \
+-d "grant_type=client_credentials" \
+"https://graph.facebook.com/oauth/access_token?"
+
+// 查看權限
+curl -G \
+-d "input_token=369227659923524|要求 grant_type=client_credentials 之後的code" \
+-d "access_token=369227659923524|原本的code" \
+"https://graph.facebook.com/debug_token?"
+
+curl -G \
+-d 'date_preset=yesterday' \
+-d 'data_columns=["spend","campaign_group_name","campaign_group_id"]' \
+-d 'access_token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
+"https://graph.facebook.com/v2.2/act_112950872167640/reportstats"
+
+
+        // https://graph.facebook.com/v2.2/act_112950872167640/?access_token=
+        //                                 act_112950872167640/offsitepixels
+        //                                 act_112950872167640/reportstats
+
+*/
+        
+/*
         $params = array(
             'date_preset'=>'last_28_days',
             'data_columns'=>"['adgroup_id','actions','spend']",
         );
         $params = array(
+            'date_preset'=>'offsitepixels',
+            'data_columns'=>"['id']",
+        );
+*/
+
+        $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
+        $fields = array(
+            'account_id', 'total_actions', 'spend'
+        );
+        $params = array(
             'date_preset'=>'yesterday',
-            'data_columns'=>"['spend','campaign_group_name','campaign_group_id']",
+            'data_columns'=>array('spend','campaign_group_name','campaign_group_id'),
+        );
+        
+        $account->getReportsStats($fields, $params);
+        print_R(
+            $account->getData()
         );
 
+exit;
         $stats = $account->getReportsStats(array(), $params);
 
         foreach($stats as $stat) {
             echo $stat->impressions;
             echo $stat->actions;
         }
-*/
+
 
 
         exit;
