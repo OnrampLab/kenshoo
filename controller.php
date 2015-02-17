@@ -23,6 +23,7 @@ require_once 'library/Log.php';
 require_once 'library/CsvManager.php';
 require_once 'library/ArrayIndex.php';
 require_once 'library/Fb.php';
+require_once 'helper/MailHelper.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
 cron();
@@ -33,6 +34,7 @@ cron();
 */
 function cron()
 {
+    MailHelper::send();
     echo date("Y-m-d H:i:s", time()) . '  ';
     $uploadDir = APPLICATION_UPLOAD_DIR;
     $backupDir = APPLICATION_BACKUP_DIR;
