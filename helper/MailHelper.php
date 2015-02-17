@@ -7,24 +7,27 @@ class MailHelper
     public static function sendStart()
     {
         $subject = '[auto] kenshoo start -'. date("Y-m-d H:i:s");
-        $body    = 'kenshoo email by Simply Bridal';
+        $body    = "kenshoo email by Simply Bridal\n" . $_SERVER['HOSTNAME'];
         self::send($subject, $body);
     }
 
     public static function sendSuccess()
     {
         $subject = '[auto] kenshoo success -'. date("Y-m-d H:i:s");
-        $body    = 'kenshoo email by Simply Bridal';
+        $body    = "kenshoo email by Simply Bridal\n" . $_SERVER['HOSTNAME'];
         self::send($subject, $body);
     }
 
     public static function sendFail()
     {
         $subject = '[auto] kenshoo fail -'. date("Y-m-d H:i:s");
-        $body    = 'kenshoo email by Simply Bridal';
+        $body    = "kenshoo email by Simply Bridal\n" . $_SERVER['HOSTNAME'];
         self::send($subject, $body);
     }
 
+    /* --------------------------------------------------------------------------------
+        private
+    -------------------------------------------------------------------------------- */
 
     private static function send($subject, $body)
     {
