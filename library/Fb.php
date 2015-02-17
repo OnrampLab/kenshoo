@@ -1,23 +1,10 @@
 <?php
 
 use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
-use Facebook\FacebookRequest;
-use Facebook\FacebookResponse;
-use Facebook\FacebookSDKException;
-use Facebook\FacebookRequestException;
-use Facebook\FacebookAuthorizationException;
-use Facebook\GraphObject;
-use Facebook\HttpClients\FacebookCurl;
-use Facebook\HttpClients\FacebookHttpable;
-use Facebook\HttpClients\FacebookCurlHttpClient;
-use Facebook\Entities\AccessToken;
-use Facebook\GraphUser;
 
 use FacebookAds\Api;
 use FacebookAds\Object\AdAccount;
-use FacebookAds\Object\AbstractCrudObject;
-use FacebookAds\Object\Fields\AdAccountFields;
+
 
 class Fb
 {
