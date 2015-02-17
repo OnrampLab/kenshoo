@@ -2,7 +2,6 @@
   "require" : {
     "facebook/php-sdk-v4" : "4.0.*",
     "facebook/php-ads-sdk": "2.2.*",
-    "curl/curl": "dev-master",
     "nette/mail": "2.2.*"
   }
 }
