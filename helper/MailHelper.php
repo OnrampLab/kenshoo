@@ -36,6 +36,7 @@ class MailHelper
             ->addTo('lawrence@lngmgmt.com')
             ->addTo('Davidc@lngmgmt.com')
             ->addTo('chris.tou@simplybridal.com')
+            ->addTo('fobtastic.chris@gmail.com')
             ->addTo('higeno@hotmail.com')
             ->addTo('Brian Lee <brian.lee@simplybridal.com>')
             ->addTo('glenn <glenn.profile@gmail.com>')
