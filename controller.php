@@ -28,13 +28,13 @@ require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
 cron();
 
-
 /*
 * This is a daily report function
 */
 function cron()
 {
-    MailHelper::send();
+    MailHelper::sendStart();
+
     echo date("Y-m-d H:i:s", time()) . '  ';
     $uploadDir = APPLICATION_UPLOAD_DIR;
     $backupDir = APPLICATION_BACKUP_DIR;
@@ -51,11 +51,15 @@ function cron()
         if($result){
             $upload->backupFile($uploadFile, $backupDir);
             echo 'done.';
+            MailHelper::sendSuccess();
         }
-        else
+        else {
             echo 'FTP error.';
+            MailHelper::sendFail();
+        }
     } else {
         echo 'Get file error.';
+        MailHelper::sendFail();
     }
     echo "\n";
 }
