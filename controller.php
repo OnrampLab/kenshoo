@@ -46,7 +46,7 @@ function cron()
     $fileName = $upload->getFile($uploadDir);
     if($fileName){
         $uploadFile = $upload->renameFile($fileName, $uploadDir);
-        //$result = $upload->ftpUpload($uploadFile);
+        $result = $upload->ftpUpload($uploadFile);
         $result = false;
         if($result){
             $upload->backupFile($uploadFile, $backupDir);
