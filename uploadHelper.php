@@ -51,7 +51,7 @@ class Upload
             closedir($handle);
         }
         $this->updateUploadCsv($fileName);
-        $this->updateCsvAboutFacebook($fileName);
+        $this->updateCsvByFacebook($fileName);
         return $fileName;
     }
     
@@ -99,10 +99,63 @@ class Upload
         fclose($fp);
     }
 
-    protected function updateCsvAboutFacebook($fileName)
+    protected function updateCsvByFacebook($fileName)
     {
+        $csvFile = $this->uploadDir . '/' . $fileName;
         $fb = new Fb(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
-        $fb->process();
+        $result = $fb->get();
+
+        // create new cvs contents
+        ArrayIndex::set($result['cost']);
+        $contents = array();
+        if (($handle = fopen($csvFile, 'r')) !== false) {
+
+            CsvManager::setHeader(fgetcsv($handle));
+            CsvManager::setFilter(array(
+                'cost' => 'float',
+                'FB-Objective' => 'int'
+            ));
+
+            while (($line = fgetcsv($handle)) !== false) {
+                $item = CsvManager::map($line);
+                $index = ArrayIndex::getIndex('group_name', $item['campaign']);
+                if ( null !== $index ) {
+                    $item['cost']  = ArrayIndex::get($index, 'spend');
+                    $item['FB-ID'] = ArrayIndex::get($index, 'account_id');
+                }
+                $contents[] = $item;
+            }
+
+            fclose($handle);
+        }
+        CsvManager::save($csvFile, $contents, true);
+
+
+        /*
+        TODO: 找不到相同的 account_id 值, 所以暫時註解起來, 確定無法使用時, 可以刪除此區塊
+        
+        // create new cvs contents
+        ArrayIndex::set($result['objective']);
+        $contents = array();
+        if (($handle = fopen($csvFile, 'r')) !== false) {
+
+            CsvManager::setHeader(fgetcsv($handle));
+
+            while (($line = fgetcsv($handle)) !== false) {
+                $item = CsvManager::map($line);
+                $index = ArrayIndex::getIndex('account_id', $item['FB-ID']);
+                if ( null !== $index ) {
+                    $item['FB-Objective']  = ArrayIndex::get($index, 'objective');
+                }
+                $contents[] = $item;
+            }
+
+            fclose($handle);
+        }
+
+        CsvManager::save($csvFile, $contents, true);
+         */
     }
+
 
 }
