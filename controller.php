@@ -9,6 +9,7 @@ if (PHP_SAPI !== 'cli') {
     }
 }
 
+// date_default_timezone_set('America/Los_Angeles');
 date_default_timezone_set('Europe/London');
 
 error_reporting(E_ALL);

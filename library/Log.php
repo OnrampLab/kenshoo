@@ -5,7 +5,7 @@ class Log
     /**
      *
      */
-    private static $logPath = 'tmp';
+    private static $logPath = APPLICATION_DIR .'/tmp';
 
     /**
      *  error log
