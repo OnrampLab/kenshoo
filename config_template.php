@@ -5,8 +5,9 @@ define('APPLICATION_FTP_USERNAME', 'username' );
 define('APPLICATION_FTP_USERPASS', 'password' );
 
 //System path
-define('APPLICATION_UPLOAD_DIR', 'upload' );
-define('APPLICATION_BACKUP_DIR', 'upload/backup' );
+define('APPLICATION_DIR',        '' );
+define('APPLICATION_UPLOAD_DIR', '' );
+define('APPLICATION_BACKUP_DIR', '' );
 
 //Google document sheet 
 define('APPLICATION_GOOGLE_KENSHOO_KEY', 'xxxxxxxxxxxxxxxxxxxxxxxx' );
