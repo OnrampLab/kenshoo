@@ -10,10 +10,10 @@ class Log
     /**
      *  error log
      */
-    public static function error( $content )
+    public static function record( $content )
     {
         $content = date("Y-m-d H:i:s") . ' - '. $content;
-        self::write( 'error.log', $content );
+        self::write( 'log.log', $content );
     }
 
     /* --------------------------------------------------------------------------------

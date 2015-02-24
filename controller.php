@@ -36,6 +36,8 @@ function cron()
     MailHelper::sendStart();
 
     echo date("Y-m-d H:i:s", time()) . '  ';
+    Log::record(date("Y-m-d H:i:s", time()) . ' - start PHP '. phpversion() );
+
     $uploadDir = APPLICATION_UPLOAD_DIR;
     $backupDir = APPLICATION_BACKUP_DIR;
     
@@ -50,14 +52,17 @@ function cron()
         if($result){
             $upload->backupFile($uploadFile, $backupDir);
             echo 'done.';
+            Log::record(date("Y-m-d H:i:s", time()) . ' - don');
             MailHelper::sendSuccess();
         }
         else {
             echo 'FTP error.';
+            Log::record(date("Y-m-d H:i:s", time()) . ' - FTP error');
             MailHelper::sendFail();
         }
     } else {
         echo 'Get file error.';
+        Log::record(date("Y-m-d H:i:s", time()) . ' - Get file error');
         MailHelper::sendFail();
     }
     echo "\n";

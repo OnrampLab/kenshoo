@@ -99,11 +99,11 @@ class Fb
             $session->validate();
         } catch (FacebookRequestException $ex) {
             // Session not valid, Graph API returned an exception with the reason.
-            Log::error($ex->getMessage());
+            Log::record($ex->getMessage());
             return null;
         } catch (\Exception $ex) {
             // Graph API returned info, but it may mismatch the current app or have expired.
-            Log::error($ex->getMessage());
+            Log::record($ex->getMessage());
             return null;
         }
 
