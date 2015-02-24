@@ -3,9 +3,12 @@
 class Log
 {
     /**
-     *
+     *  error log
      */
-    private static $logPath = APPLICATION_DIR .'/tmp';
+    public static function getPath()
+    {
+        return APPLICATION_DIR .'/tmp';
+    }
 
     /**
      *  error log
@@ -29,7 +32,7 @@ class Log
             return;
         }
     
-        $filename = self::$logPath .'/'. $file;
+        $filename = self::getPath() .'/'. $file;
         file_put_contents( $filename, $content."\n", FILE_APPEND );
     }
 
