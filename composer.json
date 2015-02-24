@@ -2,6 +2,8 @@
   "require" : {
     "facebook/php-sdk-v4" : "4.0.*",
     "facebook/php-ads-sdk": "2.2.*",
+    "google/apiclient": "dev-master",
+    "asimlqt/php-google-spreadsheet-client": "2.3.*",
     "nette/mail": "2.2.*"
   }
 }
