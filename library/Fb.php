@@ -43,8 +43,8 @@ class Fb
         $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
         $fields = array();
         $params = array(
-            'date_preset'=>'yesterday',
-            'data_columns'=>array('spend','campaign_group_name','campaign_group_id'),
+            'date_preset'  => 'yesterday',
+            'data_columns' => array('spend','campaign_group_name','reach','clicks'), // 'campaign_group_id'
         );
         
         $stats = $account->getReportsStats($fields, $params);
@@ -52,11 +52,11 @@ class Fb
         foreach($stats as $stat) {
             $result[] = array(
                 'group_name' => $stat->campaign_group_name,
-                'account_id' => $stat->campaign_group_id,
                 'spend'      => $stat->spend,
+                'reach'      => $stat->reach,
+                'clicks'     => $stat->clicks,
             );
         }
-
         return $result;
     }
 

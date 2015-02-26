@@ -120,14 +120,16 @@ class Upload
                 $item = CsvManager::map($line);
                 $index = ArrayIndex::getIndex('group_name', $item['campaign']);
                 if ( null !== $index ) {
-                    $item['cost']  = ArrayIndex::get($index, 'spend');
-                    $item['FB-ID'] = ArrayIndex::get($index, 'account_id');
+                    $item['cost']        = ArrayIndex::get($index, 'spend');
+                    $item['impressions'] = ArrayIndex::get($index, 'reach');
+                    $item['clicks']      = ArrayIndex::get($index, 'clicks');
                 }
                 $contents[] = $item;
             }
 
             fclose($handle);
         }
+
         CsvManager::save($csvFile, $contents, true);
 
 
