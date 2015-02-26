@@ -1,19 +1,22 @@
 <?php
-//FTP
-define('APPLICATION_FTP_SERVER', 'ftp.kenshoo.com' );
+// timezone
+define('APPLICATION_TIMEZONE', 'America/Los_Angeles' );
+
+// FTP
+define('APPLICATION_FTP_SERVER', '' );
 define('APPLICATION_FTP_USERNAME', 'username' );
 define('APPLICATION_FTP_USERPASS', 'password' );
 
-//System path
+// System path
 define('APPLICATION_DIR',        '' );
 define('APPLICATION_UPLOAD_DIR', '' );
 define('APPLICATION_BACKUP_DIR', '' );
 
-//Google document sheet 
+// Google document sheet 
 define('APPLICATION_GOOGLE_KENSHOO_KEY', 'xxxxxxxxxxxxxxxxxxxxxxxx' );
 define('APPLICATION_GOOGLE_KENSHOO_GID', '0' );
 
-//Facebook
+// Facebook
 define('APPLICATION_FACEBOOK_ID', '' );
 define('APPLICATION_FACEBOOK_SECRET', '' );
 define('APPLICATION_FACEBOOK_SHORT_TOKEN', '' );
