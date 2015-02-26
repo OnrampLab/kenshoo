@@ -44,12 +44,22 @@ function perform()
 
     $spreadsheetService = new Google\Spreadsheet\SpreadsheetService();
     $spreadsheetFeed = $spreadsheetService->getSpreadsheets();
-    print_R($spreadsheetFeed);
+    //print_R($spreadsheetFeed);
 
     $spreadsheet = $spreadsheetFeed->getByTitle('test002');
-    print_r($spreadsheet);
-    //$sheets = $spreadsheet->getWorksheets();
-    //print_r($sheets);
+    //print_r($spreadsheet);
+
+    $worksheets = $spreadsheet->getWorksheets();
+    $worksheet = $worksheets->getByTitle('sheet1');
+    //print_r($worksheets);
+    //print_r(get_class_methods($worksheets));
+
+    $listFeed = $worksheet->getListFeed();
+    $entries = $listFeed->getEntries();
+    $listEntry = $entries[0];
+    $values = $listEntry->getValues();
+    print_r($values);
+
 
 /*
     $feed = new Google\Spreadsheet\SpreadsheetFeed(
@@ -121,3 +131,56 @@ function getToken()
     $service_token = json_decode($client->getAccessToken());
     return $service_token->access_token;
 }
+
+
+
+
+/*
+
+class csvBridge
+
+    name,age,like
+    kevin,15,eat
+    vivian,18,eat/sport
+    old man,85,mountain
+    Chris,45,game
+
+*/
+$csv = new CsvBridgeGoogleSpreadsheet();
+$csv->init(array(
+    'token'               => '',
+    'google_client_email' => APPLICATION_GOOGLE_CLIENT_EMAIL
+));
+
+$csv = new CsvBridgeFile();
+$csv->init( array(
+    'file' => 'tmp/test001.csv'
+));
+
+$csv->getHeader()   // name,age,like
+$csv->setHeader()   // 格式 -> array
+$csv->map($row)     // index array -> hash array
+
+$csv->getCount()    // 4
+//$csv->field('a1') // name
+//$csv->field('a2') // kevin
+$csv->getRow(0)     // kevin,15,eat
+$csv->setRow(0, Array())    // 實際上會先比對, 不同才改變, 會比較慢, 但對於 sheet 格式來說較合理
+
+$csv->getMapRow(0)  // name=>kevin , age=>15 , like=>eat
+$csv->setMapRow(0, Array()) // 實際上會先比對, 不同才改變, 會比較慢, 但對於 sheet 格式來說較合理
+
+$csv->save()        // 儲存所有內容, 預設值 isWriteHeader=true
+
+$count = $csv->getCount();
+for ( $i=1; $i<=$count; $i++ ) {
+    $mapRow = $csv->getMapRow($i);
+    $csv->setMapRow($i, $mapRow );
+}
+
+
+
+※新的要加上
+impressions -> reach
+clicks      -> clicks
+
