@@ -16,8 +16,8 @@ class Upload
     
     public function ftpUpload($uploadFile)
     {
-        $fileName = explode('/', $uploadFile);
-        
+        $fileName = basename($uploadFile);
+
         // set up basic connection
         $connId = ftp_connect($this->ftpServer);
         
@@ -27,7 +27,7 @@ class Upload
         if ((!$connId) || (!$loginResult)) { 
             ;
         } else {
-            if (ftp_put($connId, $fileName[count($fileName) - 1], $uploadFile, FTP_ASCII)) {
+            if (ftp_put($connId, $fileName, $uploadFile, FTP_ASCII)) {
                 //FTP success
                 ftp_close($connId);
                 return true;
@@ -76,7 +76,7 @@ class Upload
         rename($filePath, $dir . '/' . $fileName[count($fileName) - 1]);
         return ;
     }
-    
+
     protected function updateUploadCsv($fileName)
     {
         $file = $this->uploadDir . '/' . $fileName;

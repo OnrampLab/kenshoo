@@ -1,5 +1,7 @@
 config.php
 *.log
+/tmp/csv_upload
+/tmp/*.p12
 /upload
 /vendor
 composer.lock

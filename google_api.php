@@ -23,6 +23,7 @@ require_once 'library/ArrayIndex.php';
 require_once 'library/Fb.php';
 require_once 'library/GoogleApiHelper.php';
 require_once 'library/GoogleWorksheetManager.php';
+require_once 'helper/GoogleSheetdownloadHelper.php';
 require_once 'helper/MailHelper.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
@@ -37,6 +38,64 @@ function perform()
 {
     echo '<pre>';
 
+    //
+    // $this->upgradeGoogleSheet();
+
+    //    
+    $dateFormat = date('Y-m-d',time());
+    $dateFormat = date('Y-m-d', strtotime($dateFormat . ' - 1 day'));
+    $uploadPath = APPLICATION_DIR . '/tmp/csv_upload';
+    $uploadFile = "SimplyBridal-UC_File-{$dateFormat}.csv";
+
+/*
+    // create
+    makeCsvFile( $uploadPath .'/'. $uploadFile );
+
+    // upload
+    uploadCsvFile( $uploadPath .'/'. $uploadFile );
+*/
+}
+
+/**
+ *  create csv file
+ */
+function makeCsvFile( $pathFile )
+{
+    GoogleSheetdownloadHelper::download( $pathFile, APPLICATION_GOOGLE_KENSHOO_KEY, APPLICATION_GOOGLE_KENSHOO_GID );
+}
+
+/**
+ *  upload csv file
+ */
+function uploadCsvFile( $pathFile )
+{
+    $upload = new Upload();
+    if ( !file_exists($pathFile) ) {
+        echo 'Get file error.';
+        Log::record(date("Y-m-d H:i:s", time()) . ' - Get file error');
+        //MailHelper::sendFail();
+        exit;
+    }
+
+    $result = $upload->ftpUpload($pathFile);
+    if($result){
+        echo 'done.';
+        Log::record(date("Y-m-d H:i:s", time()) . ' - don');
+        //MailHelper::sendSuccess();
+    }
+    else {
+        echo 'FTP error.';
+        Log::record(date("Y-m-d H:i:s", time()) . ' - FTP error');
+        //MailHelper::sendFail();
+    }
+    echo "\n";
+}
+
+/**
+ *
+ */
+function upgradeGoogleSheet()
+{
     $token = GoogleApiHelper::getToken();
     if ( !$token ) {
         die('token error!');
@@ -63,7 +122,6 @@ function perform()
         $row = updateByFacebook($row, $header);
         $sheet->setRow($i, $row);
     }
-
 }
 
 /**
