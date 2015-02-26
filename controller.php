@@ -9,6 +9,7 @@ if (PHP_SAPI !== 'cli') {
     }
 }
 
+require_once 'config.php';
 date_default_timezone_set(APPLICATION_TIMEZONE);
 
 error_reporting(E_ALL);
@@ -17,7 +18,6 @@ ini_set('display_errors','On');
 ini_set('memory_limit', '2048M');
 ini_set('max_execution_time', 1200);
 
-require_once 'config.php';
 require_once 'vendor/autoload.php';
 require_once 'library/Log.php';
 require_once 'library/CsvManager.php';
