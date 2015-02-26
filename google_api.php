@@ -38,8 +38,10 @@ function perform()
 {
     echo '<pre>';
 
+    Log::record(date("Y-m-d H:i:s", time()) . ' - start PHP '. phpversion() );
+
     //
-    // $this->upgradeGoogleSheet();
+    upgradeGoogleSheet();
 
     //    
     $dateFormat = date('Y-m-d',time());
@@ -47,13 +49,15 @@ function perform()
     $uploadPath = APPLICATION_DIR . '/tmp/csv_upload';
     $uploadFile = "SimplyBridal-UC_File-{$dateFormat}.csv";
 
-/*
     // create
     makeCsvFile( $uploadPath .'/'. $uploadFile );
 
+/*
     // upload
     uploadCsvFile( $uploadPath .'/'. $uploadFile );
 */
+
+    Log::record(date("Y-m-d H:i:s", time()) . ' - end');
 }
 
 /**
@@ -71,7 +75,6 @@ function uploadCsvFile( $pathFile )
 {
     $upload = new Upload();
     if ( !file_exists($pathFile) ) {
-        echo 'Get file error.';
         Log::record(date("Y-m-d H:i:s", time()) . ' - Get file error');
         //MailHelper::sendFail();
         exit;
@@ -79,16 +82,14 @@ function uploadCsvFile( $pathFile )
 
     $result = $upload->ftpUpload($pathFile);
     if($result){
-        echo 'done.';
-        Log::record(date("Y-m-d H:i:s", time()) . ' - don');
+        Log::record(date("Y-m-d H:i:s", time()) . ' - FTP success');
         //MailHelper::sendSuccess();
     }
     else {
-        echo 'FTP error.';
         Log::record(date("Y-m-d H:i:s", time()) . ' - FTP error');
         //MailHelper::sendFail();
     }
-    echo "\n";
+    echo "done.\n";
 }
 
 /**
