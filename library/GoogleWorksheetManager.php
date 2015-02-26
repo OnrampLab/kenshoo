@@ -10,7 +10,26 @@ class GoogleWorksheetManager
      */
     public function __construct( $worksheet )
     {
+        $this->worksheet = $worksheet;
         $this->entries = $worksheet->getListFeed()->getEntries();
+    }
+
+    /**
+     *  @return array
+     */
+    public function getHeader()
+    {
+        $row = $this->getRow(0);
+        if ( !$row ) {
+            return array();
+        }
+
+        $result = array();
+        foreach ( $row as $title => $value ) {
+            $result[] = $title;
+        }
+
+        return $result;
     }
 
     /**

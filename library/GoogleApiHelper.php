@@ -41,13 +41,11 @@ class GoogleApiHelper
 
         $spreadsheetService = new Google\Spreadsheet\SpreadsheetService();
         $spreadsheetFeed = $spreadsheetService->getSpreadsheets();
-        //print_R($spreadsheetFeed);
 
         $spreadsheet = $spreadsheetFeed->getByTitle($book);
         if ( !$spreadsheet ) {
             return false;
         }
-        //print_r($spreadsheet);
 
         $worksheets = $spreadsheet->getWorksheets();
         if ( !$worksheets ) {

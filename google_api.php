@@ -48,6 +48,7 @@ function perform()
     }
 
     $sheet = new GoogleWorksheetManager($worksheet);
+    $header = $sheet->getHeader();
     $count = $sheet->getCount();
     for ( $i=0; $i<$count; $i++ ) {
         $row = $sheet->getRow($i);
@@ -58,16 +59,16 @@ function perform()
             continue;
         }
         
-        print_r($row);
         $row = updateDate($row);
-        $row = updateByFacebook($row);
-        print_r($row);
-        exit;
-        //$sheet->setRow($i, $row);
+        $row = updateByFacebook($row, $header);
+        $sheet->setRow($i, $row);
     }
 
 }
 
+/**
+ *
+ */
 function updateDate( $row )
 {
     $row['date'] = date("n/j/Y", time());
@@ -75,34 +76,45 @@ function updateDate( $row )
     return $row;
 }
 
-function updateByFacebook( $row )
+/**
+ *
+ */
+function updateByFacebook( $row, $header )
 {
-
-    $fb = new Fb(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
-    $result = $fb->get();
+    $facebookData = getFacebookData();
 
     // create new cvs contents
-    ArrayIndex::set($result['cost']);
+    ArrayIndex::set($facebookData['cost']);
     $contents = array();
 
-    CsvManager::setHeader(fgetcsv($handle));
+    CsvManager::setHeader($header);
     CsvManager::setFilter(array(
         'cost' => 'float',
         'fb-objective' => 'int'
     ));
-print_r($row);
+
     $index = ArrayIndex::getIndex('group_name', $row['campaign']);
-echo 'index='.$index;
     if ( null !== $index ) {
         $row['cost']        = ArrayIndex::get($index, 'spend');
         $row['impressions'] = ArrayIndex::get($index, 'reach');
         $row['clicks']      = ArrayIndex::get($index, 'clicks');
     }
-print_r($row);
-exit;
+
     return $row;
 
 }
 
+/**
+ *  cache facebook data
+ */
+function getFacebookData()
+{
+    static $result;
+    if ( $result ) {
+        return $result;
+    }
 
-
+    $fb = new Fb(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
+    $result = $fb->get();
+    return $result;
+}
