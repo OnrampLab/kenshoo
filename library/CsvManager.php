@@ -1,5 +1,8 @@
 <?php
 
+/**
+ *  該程式應該修改成非靜態 class
+ */
 class CsvManager
 {
     /**
@@ -11,6 +14,15 @@ class CsvManager
      *
      */
     private static $filterSetting = array();
+
+    /**
+     *  init
+     */
+    public static function init()
+    {
+        self::$header        = array();
+        self::$filterSetting = array();
+    }
 
     /**
      *  set csv header

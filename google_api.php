@@ -24,6 +24,7 @@ require_once 'library/Fb.php';
 require_once 'library/GoogleApiHelper.php';
 require_once 'library/GoogleWorksheetManager.php';
 require_once 'helper/GoogleSheetdownloadHelper.php';
+require_once 'helper/TollfreeforwardingHelper.php';
 require_once 'helper/MailHelper.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
@@ -104,6 +105,12 @@ function upgradeGoogleSheet()
         die('worksheet not found!');
     }
 
+    // tollfreeforwarding API
+    // 使用時請注意時區!
+    $stat = TollfreeforwardingHelper::getStat();
+    // debug
+    // print_r($stat); exit;
+
     $sheet = new GoogleWorksheetManager($worksheet);
     $header = $sheet->getHeader();
     $count = $sheet->getCount();
@@ -115,10 +122,13 @@ function upgradeGoogleSheet()
             // 為 0 時不覆蓋任何值
             continue;
         }
-    
         $row = updateDate($row);
         $row = updateByFacebook($row, $header);
+        $row = updateByTollfreeforwarding($row, $stat);
         $sheet->setRow($i, $row);
+
+        // debug
+        echo $i. ' '; ob_flush(); flush();
     }
 }
 
@@ -143,6 +153,7 @@ function updateByFacebook( $row, $header )
     ArrayIndex::set($facebookData['cost']);
     $contents = array();
 
+    CsvManager::init();
     CsvManager::setHeader($header);
     CsvManager::setFilter(array(
         'cost' => 'float',
@@ -157,7 +168,18 @@ function updateByFacebook( $row, $header )
     }
 
     return $row;
+}
 
+function updateByTollfreeforwarding( $row, $stat )
+{
+
+    ArrayIndex::set($stat);
+    $index = ArrayIndex::getIndex('id', $row['phonenum']);
+    if ( null !== $index ) {
+        $row['conv']    = ArrayIndex::get($index, 'conv');
+        $row['revenue'] = ArrayIndex::get($index, 'revenue');
+    }
+    return $row;
 }
 
 /**

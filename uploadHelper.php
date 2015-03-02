@@ -110,6 +110,7 @@ class Upload
         $contents = array();
         if (($handle = fopen($csvFile, 'r')) !== false) {
 
+            CsvManager::init();
             CsvManager::setHeader(fgetcsv($handle));
             CsvManager::setFilter(array(
                 'cost' => 'float',
