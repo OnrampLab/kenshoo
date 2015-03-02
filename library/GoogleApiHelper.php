@@ -10,7 +10,7 @@ class GoogleApiHelper
      */
     public static function getToken()
     {
-        $key = file_get_contents( APPLICATION_DIR.APPLICATION_GOOGLE_CLIENT_KEY_FILE);
+        $key = file_get_contents( APPLICATION_DIR.'/'.APPLICATION_GOOGLE_CLIENT_KEY_FILE);
         $cred = new Google_Auth_AssertionCredentials(
             APPLICATION_GOOGLE_CLIENT_EMAIL,
             array('https://spreadsheets.google.com/feeds'),

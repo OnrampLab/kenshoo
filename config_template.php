@@ -16,6 +16,12 @@ define('APPLICATION_BACKUP_DIR', '' );
 define('APPLICATION_GOOGLE_KENSHOO_KEY', 'xxxxxxxxxxxxxxxxxxxxxxxx' );
 define('APPLICATION_GOOGLE_KENSHOO_GID', '0' );
 
+// Google client
+define('APPLICATION_GOOGLE_CLIENT_EMAIL',       '' );
+define('APPLICATION_GOOGLE_CLIENT_KEY_FILE',    '' );
+define('APPLICATION_GOOGLE_SPREADSHEETS_BOOK',  '' );
+define('APPLICATION_GOOGLE_SPREADSHEETS_SHEET', '' );
+
 // Facebook
 define('APPLICATION_FACEBOOK_ID', '' );
 define('APPLICATION_FACEBOOK_SECRET', '' );

@@ -28,6 +28,7 @@ require_once 'helper/MailHelper.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
 
+echo '<pre>';
 perform();
 exit;
 
@@ -36,8 +37,6 @@ exit;
  */
 function perform()
 {
-    echo '<pre>';
-
     Log::record(date("Y-m-d H:i:s", time()) . ' - start PHP '. phpversion() );
 
     //
@@ -52,12 +51,11 @@ function perform()
     // create
     makeCsvFile( $uploadPath .'/'. $uploadFile );
 
-/*
     // upload
     uploadCsvFile( $uploadPath .'/'. $uploadFile );
-*/
 
-    Log::record(date("Y-m-d H:i:s", time()) . ' - end');
+    Log::record(date("Y-m-d H:i:s", time()) . ' - Done');
+    echo "done\n";
 }
 
 /**
@@ -76,20 +74,19 @@ function uploadCsvFile( $pathFile )
     $upload = new Upload();
     if ( !file_exists($pathFile) ) {
         Log::record(date("Y-m-d H:i:s", time()) . ' - Get file error');
-        //MailHelper::sendFail();
+        MailHelper::sendFail();
         exit;
     }
 
     $result = $upload->ftpUpload($pathFile);
     if($result){
         Log::record(date("Y-m-d H:i:s", time()) . ' - FTP success');
-        //MailHelper::sendSuccess();
+        MailHelper::sendSuccess();
     }
     else {
         Log::record(date("Y-m-d H:i:s", time()) . ' - FTP error');
-        //MailHelper::sendFail();
+        MailHelper::sendFail();
     }
-    echo "done.\n";
 }
 
 /**
@@ -102,7 +99,7 @@ function upgradeGoogleSheet()
         die('token error!');
     }
 
-    $worksheet = GoogleApiHelper::getWorksheet( 'test001', 'sheet1', $token );
+    $worksheet = GoogleApiHelper::getWorksheet( APPLICATION_GOOGLE_SPREADSHEETS_BOOK, APPLICATION_GOOGLE_SPREADSHEETS_SHEET, $token );
     if ( !$worksheet ) {
         die('worksheet not found!');
     }
@@ -118,7 +115,7 @@ function upgradeGoogleSheet()
             // 為 0 時不覆蓋任何值
             continue;
         }
-        
+    
         $row = updateDate($row);
         $row = updateByFacebook($row, $header);
         $sheet->setRow($i, $row);
