@@ -7,6 +7,7 @@ if (PHP_SAPI !== 'cli') {
     {
         exit;
     }
+    echo '<pre>';
 }
 
 error_reporting(E_ALL);
@@ -29,7 +30,6 @@ require_once 'helper/MailHelper.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
 
-echo '<pre>';
 perform();
 exit;
 
@@ -115,20 +115,25 @@ function upgradeGoogleSheet()
     $header = $sheet->getHeader();
     $count = $sheet->getCount();
     for ( $i=0; $i<$count; $i++ ) {
-        $row = $sheet->getRow($i);
 
-        // Override = 1 or 0
-        if ( !$row['override'] ) {
-            // 為 0 時不覆蓋任何值
-            continue;
-        }
+        $row = $sheet->getRow($i);
+        
+        // 無論如何都必須修改的值
         $row = updateDate($row);
-        $row = updateByFacebook($row, $header);
-        $row = updateByTollfreeforwarding($row, $stat);
+
+        // 在 Override = 1 （1 or 0) 的情況要下修改的值
+        if ( $row['override'] ) {
+            $row = updateByFacebook($row, $header);
+            $row = updateByTollfreeforwarding($row, $stat);
+        }
+        
         $sheet->setRow($i, $row);
 
         // debug
-        echo $i. ' '; ob_flush(); flush();
+        echo $i. ' ';
+        if (PHP_SAPI !== 'cli') {
+            ob_flush(); flush();
+        }
     }
 }
 
