@@ -5,11 +5,23 @@ class TollfreeforwardingHelper
 
     public static function getStat()
     {
-        $result = array();
         $items = self::getAll();
-        $items = self::baseFilter( $items );
-        $items = self::uniquePhone($items);
-        $stat = self::statisticById($items);
+        foreach ( $items as $index => $item ) {
+            $items[$index]['phone'] = substr($item['phone'],-10);
+        }
+
+        // 如果沒有今天的 phone call, 則去除該筆資料
+        $hasTodayPhoneItems = array();
+        $todayPhones = TollfreeforwardingHelper::getUniqueTodayPhones();
+        foreach ( $items as $item ) {
+            if (in_array($item['phone'], $todayPhones)) {
+                $hasTodayPhoneItems[] = $item;
+            }
+        }
+
+        $hasTodayPhoneItems = self::baseFilter( $hasTodayPhoneItems );
+        $hasTodayPhoneItems = self::uniquePhone($hasTodayPhoneItems);
+        $stat = self::statisticById($hasTodayPhoneItems);
         return $stat;
     }
 
@@ -145,6 +157,67 @@ class TollfreeforwardingHelper
         $startDate = date('Ymd', strtotime('2014-10-01'));
         $endDate   = date("Ymd", strtotime($today . ' + 1 day'));
         
+        $url = "https://tollfreeforwarding.com/api/?"
+             . "u={$user}"
+             . "&p={$pwd}"
+             . "&rangeStart={$startDate}"
+             . "&rangeEnd={$endDate}"
+             . "&timezone=-8"
+             . "&fields=callerId,appear,durationSeconds"
+             . "&format=comma"
+        ;
+        // debug
+        // echo $url; exit;
+
+        return trim(file_get_contents($url));
+    }
+
+    /**
+     *  取得 "今天" 有 phone call 的 phones array
+     *  請注意主程式的時區設定
+     *
+     *  @return array
+     */
+    private static function getUniqueTodayPhones()
+    {
+        $result = array();
+        $items = self::getTodayAll();
+        foreach ( $items as $item ) {
+            $result[] = substr($item['phone'],-10);
+        }
+        return array_values(array_unique($result));
+    }
+
+    /**
+     *  
+     */
+    private static function getTodayAll()
+    {
+        $csvContent = self::getTodayByApi();
+        $csvItems = explode("\n",$csvContent);
+
+        $result = array();
+        CsvManager::init();
+        CsvManager::setHeader(array('id','phone','second'));
+        foreach ( $csvItems as $csvItem ) {
+            $result[] = CsvManager::map(explode(",",$csvItem));
+        }
+        return $result;
+    }
+
+    /**
+     *
+     */
+    private static function getTodayByApi()
+    {
+        $user = APPLICATION_TOLLFREEFORWARDING_USER;
+        $pwd = APPLICATION_TOLLFREEFORWARDING_PWD;
+
+        // 原本日期區設定為 "只取 前60天 的記錄"
+        $today = date("Y-m-d");
+        $startDate = date('Ymd', strtotime($today . ' - 1 day'));
+        $endDate   = date("Ymd", strtotime($today . ' + 1 day'));
+
         $url = "https://tollfreeforwarding.com/api/?"
              . "u={$user}"
              . "&p={$pwd}"

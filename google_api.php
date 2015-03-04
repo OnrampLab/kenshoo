@@ -117,7 +117,7 @@ function upgradeGoogleSheet()
     for ( $i=0; $i<$count; $i++ ) {
 
         $row = $sheet->getRow($i);
-        
+
         // 無論如何都必須修改的值
         $row = updateDate($row);
 
@@ -126,7 +126,6 @@ function upgradeGoogleSheet()
             $row = updateByFacebook($row, $header);
             $row = updateByTollfreeforwarding($row, $stat);
         }
-        
         $sheet->setRow($i, $row);
 
         // debug
