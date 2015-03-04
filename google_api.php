@@ -121,11 +121,14 @@ function upgradeGoogleSheet()
         // 無論如何都必須修改的值
         $row = updateDate($row);
 
-        // 在 Override = 1 （1 or 0) 的情況要下修改的值
+        // 在 Override = 1 的情況要下修改的值
         if ( $row['override'] ) {
+            $row['impressions'] = 0;
+            $row['clicks'] = 0;
+            $row['cost'] = 0;
             $row = updateByFacebook($row, $header);
-            $row = updateByTollfreeforwarding($row, $stat);
         }
+        $row = updateByTollfreeforwarding($row, $stat);
         $sheet->setRow($i, $row);
 
         // debug
@@ -176,6 +179,8 @@ function updateByFacebook( $row, $header )
 
 function updateByTollfreeforwarding( $row, $stat )
 {
+    $row['conv']    = 0;
+    $row['revenue'] = 0;
 
     ArrayIndex::set($stat);
     $index = ArrayIndex::getIndex('id', $row['phonenum']);
