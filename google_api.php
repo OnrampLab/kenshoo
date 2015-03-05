@@ -76,6 +76,7 @@ function uploadCsvFile( $pathFile )
     if ( !file_exists($pathFile) ) {
         Log::record(date("Y-m-d H:i:s", time()) . ' - Get file error');
         MailHelper::sendFail();
+        echo "get file error\n";
         exit;
     }
 
