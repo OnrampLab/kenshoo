@@ -1,6 +1,9 @@
 <?php
 #!/usr/bin/php -q
 
+/**
+ *  利用 google API 直接修改 google spreadsheet
+ */
 if (PHP_SAPI !== 'cli') {
     if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
          '203.75.167.229' !== $_SERVER['REMOTE_ADDR'] )
@@ -182,13 +185,17 @@ function updateByTollfreeforwarding( $row, $stat )
 {
     $row['conv']    = 0;
     $row['revenue'] = 0;
-
     ArrayIndex::set($stat);
-    $index = ArrayIndex::getIndex('id', $row['phonenum']);
-    if ( null !== $index ) {
-        $row['conv']    = ArrayIndex::get($index, 'conv');
-        $row['revenue'] = ArrayIndex::get($index, 'revenue');
+
+    $phoneNumbers = explode("||", $row['phonenum'] );
+    foreach ( $phoneNumbers as $number ) {
+    $index = ArrayIndex::getIndexByHasString('id', $number);
+        if ( null !== $index ) {
+            $row['conv']    += ArrayIndex::get($index, 'conv');
+            $row['revenue'] += ArrayIndex::get($index, 'revenue');
+        }
     }
+
     return $row;
 }
 
