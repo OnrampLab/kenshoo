@@ -1,6 +1,16 @@
 <?php
 #!/usr/bin/php -q
 
+/**
+ *  將 google sheet 下載為 csv
+ *  修改內容
+ *  上傳至 FTP
+ *
+ *  注意: 該程式已停止使用
+ *        已改用 google_api.php
+ */
+exit;
+
 if (PHP_SAPI !== 'cli') {
     if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
          '203.75.167.229' !== $_SERVER['REMOTE_ADDR'] )
