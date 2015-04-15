@@ -43,6 +43,11 @@ class Fb
         $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
         $fields = array();
         $params = array(
+            /*
+            // 未經測試，很有可能無法執行
+            'day_start'    => array('year'=>'2015','month'=>'4','day'=>'1'),
+            'day_end'      => array('year'=>'2015','month'=>'4','day'=>'1'),
+            */
             'date_preset'  => 'yesterday',
             'data_columns' => array('spend','campaign_group_name','reach','clicks'), // 'campaign_group_id'
         );

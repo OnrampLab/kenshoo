@@ -52,8 +52,11 @@ class CsvManager
      */
     public static function map($row)
     {
+        if ( !$row || !is_array($row) || !$row[0] ) {
+            return array();
+        }
         $item = array_combine(self::$header, $row);
-        
+
         foreach ( $item as $key => $value ) {
             foreach ( self::$filterSetting as $filterKey => $filterType ) {
                 if ( $key===$filterKey ) {

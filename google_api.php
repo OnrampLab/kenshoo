@@ -17,6 +17,9 @@ error_reporting(E_ALL);
 ini_set('html_errors','On');
 ini_set('display_errors','On');
 
+//echo ini_get("memory_limit"); exit;
+//echo ini_set("memory_limit","2048M");
+
 require_once 'config.php';
 date_default_timezone_set(APPLICATION_TIMEZONE);
 
