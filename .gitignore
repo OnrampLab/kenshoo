@@ -1,7 +1,7 @@
+/casperjs/config/config.js
 config.php
 *.log
-/tmp/csv_upload
-/tmp/*.p12
+/tmp
 /upload
 /vendor
 composer.lock
