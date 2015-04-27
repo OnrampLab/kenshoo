@@ -1,6 +1,9 @@
 # kenshoo
 This is a simply tool to update kenshoo csv every day.
 
+composer self-update
+composer install
+
 1.Rename config_templete.php to config.php
 2.Modify settings in config.php
 3.Copy csv file which you want to upload in upload folder
@@ -29,7 +32,7 @@ This is a simply tool to update kenshoo csv every day.
 
     npm install casperjs
     sudo ln -s /usr/developer-tool/casperjs/node_modules/casperjs/bin/casperjs  /usr/local/bin/casperjs
-    casperjs -v
+    casperjs --version
 ```
 
 ### setting
@@ -41,4 +44,10 @@ This is a simply tool to update kenshoo csv every day.
 ### run
 ```sh
     casperjs casperjs/pinterest-login-and-download-csv.js
+```
+
+### crontab
+```sh
+    crontab -e
+    /usr/local/bin/casperjs /var/www/kenshoo/casperjs/pinterest-login-and-download-csv.js >> /var/www/kenshoo/tmp/casperjs.log
 ```
