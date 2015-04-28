@@ -14,6 +14,7 @@ if (PHP_SAPI !== 'cli') {
     echo '<pre>';
 }
 
+define("IS_DEBUG", false );
 error_reporting(E_ALL);
 ini_set('html_errors','On');
 ini_set('display_errors','On');
@@ -57,6 +58,11 @@ function perform()
     $dateFormat = date('Y-m-d', strtotime($dateFormat . ' - 1 day'));
     $uploadPath = APPLICATION_DIR . '/tmp/csv_upload';
     $uploadFile = "SimplyBridal-UC_File-{$dateFormat}.csv";
+
+    if ( IS_DEBUG ) {
+        echo "Debug mode: Done\n";
+        exit;
+    }
 
     // create
     makeCsvFile( $uploadPath .'/'. $uploadFile );
@@ -134,7 +140,13 @@ function upgradeGoogleSheet()
         }
         $row = updateByPinterest( $row );
         $row = updateByTollfreeforwarding( $row );
-        $sheet->setRow($i, $row);
+
+        if ( IS_DEBUG ) {
+            // not setting to sheet
+        }
+        else {
+            $sheet->setRow($i, $row);
+        }
 
         // debug
         echo $i. ' ';
@@ -142,6 +154,7 @@ function upgradeGoogleSheet()
             ob_flush(); flush();
         }
     }
+    echo "\n";
 
 }
 
