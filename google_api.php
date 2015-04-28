@@ -8,6 +8,7 @@ if (PHP_SAPI !== 'cli') {
     if ( '192.168.'       !== substr($_SERVER['REMOTE_ADDR'],0,8) &&
          '203.75.167.229' !== $_SERVER['REMOTE_ADDR'] )
     {
+        echo "Deny";
         exit;
     }
     echo '<pre>';
@@ -26,12 +27,14 @@ date_default_timezone_set(APPLICATION_TIMEZONE);
 require_once 'vendor/autoload.php';
 require_once 'library/Log.php';
 require_once 'library/CsvManager.php';
+require_once 'library/CsvReadManager.php';
 require_once 'library/ArrayIndex.php';
 require_once 'library/Fb.php';
 require_once 'library/GoogleApiHelper.php';
 require_once 'library/GoogleWorksheetManager.php';
 require_once 'helper/GoogleSheetdownloadHelper.php';
 require_once 'helper/TollfreeforwardingHelper.php';
+require_once 'helper/PinterestHelper.php';
 require_once 'helper/MailHelper.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
@@ -112,12 +115,6 @@ function upgradeGoogleSheet()
         die('worksheet not found!');
     }
 
-    // tollfreeforwarding API
-    // 使用時請注意時區!
-    $stat = TollfreeforwardingHelper::getStat();
-    // debug
-    // print_r($stat); exit;
-
     $sheet = new GoogleWorksheetManager($worksheet);
     $header = $sheet->getHeader();
     $count = $sheet->getCount();
@@ -135,7 +132,8 @@ function upgradeGoogleSheet()
             $row['cost'] = 0;
             $row = updateByFacebook($row, $header);
         }
-        $row = updateByTollfreeforwarding($row, $stat);
+        $row = updateByPinterest( $row );
+        $row = updateByTollfreeforwarding( $row );
         $sheet->setRow($i, $row);
 
         // debug
@@ -144,6 +142,7 @@ function upgradeGoogleSheet()
             ob_flush(); flush();
         }
     }
+
 }
 
 /**
@@ -180,12 +179,53 @@ function updateByFacebook( $row, $header )
         $row['impressions'] = ArrayIndex::get($index, 'reach');
         $row['clicks']      = ArrayIndex::get($index, 'clicks');
     }
+    return $row;
+}
+
+/**
+ *
+ */
+function updateByPinterest( $row )
+{
+    static $pinterestRows;
+    if ( !$pinterestRows ) {
+        $pinterestRows = PinterestHelper::getAllRows();
+        // print_r($pinterestRows); exit;
+    }
+
+    /*
+     *  取 64 byte 是因為 pinterest 的欄位最大只能存 64 byte
+     */
+    foreach ( $pinterestRows as $pinterestRow ) {
+        if ( substr($row['campaign'],0,64) != substr($pinterestRow['name'],0,64) ) {
+            // name 核對不同
+            continue;
+        }
+        if ( $row['date'] != date('n/j/Y',$pinterestRow['date']) ) {
+            // 日期 核對不同
+            continue;
+        }
+        $row['cost']        = (float) substr($pinterestRow['spend'],1);
+        $row['impressions'] = $pinterestRow['impressions'];
+        $row['clicks']      = $pinterestRow['repins'];
+        break;
+    }
 
     return $row;
 }
 
-function updateByTollfreeforwarding( $row, $stat )
+/**
+ *  tollfreeforwarding API
+ *  使用時請注意時區!
+ */
+function updateByTollfreeforwarding( $row )
 {
+    static $stat;
+    if ( !$stat ) {
+        $stat = TollfreeforwardingHelper::getStat();
+        // print_r($stat); exit;
+    }
+
     $row['conv']    = 0;
     $row['revenue'] = 0;
     ArrayIndex::set($stat);

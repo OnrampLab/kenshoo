@@ -5,6 +5,11 @@ class TollfreeforwardingHelper
 
     public static function getStat()
     {
+        static $stat;
+        if ( $stat ) {
+            return $stat;
+        }
+
         $items = self::getAll();
         foreach ( $items as $index => $item ) {
             if ( !$item ) {
