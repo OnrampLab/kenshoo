@@ -31,7 +31,7 @@ casper.on('resource.received', function (resource) {
         }
 
         try {
-            var pathFile = getProjectPath() + '/tmp/' + file
+            var pathFile = getProjectPath() + '/tmp/pinterest_export/' + file
             echo('==== save to file: ' + pathFile );
             casper.download(resource.url, pathFile );
         } catch (e) {
@@ -48,7 +48,7 @@ casper.on('resource.received', function (resource) {
 
 casper.start(url, function() {
     var config = getConfig();
-    this.capture( getProjectPath() + "/tmp/url-before.png");
+    // this.capture( getProjectPath() + "/tmp/url-before.png");
     echoInfo(this);
 });
 
@@ -75,9 +75,11 @@ casper.then(function() {
 casper.run(function() {
     echoInfo(this);
     var config = getConfig();
+    /*
     this.capture( getProjectPath() + "/tmp/url-after.png", {
         top: 0, left: 0, width: 1600, height: 900
     });
+    */
     this
         .echo('==== The End ====')
         .exit();
@@ -198,6 +200,6 @@ function getDownloadfileName()
     if ( !from || !to ) {
         return "pinterest-undefined.csv";
     }
-    return "pinterest-["+ from +"]-to-["+ to +"].csv";
+    return "pinterest-to-["+ to +"].csv";
 }
 
