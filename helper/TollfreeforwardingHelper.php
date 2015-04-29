@@ -39,16 +39,22 @@ class TollfreeforwardingHelper
 
     /**
      *  刪除來自客服的 id (電話) -> 1-800-701-4026
+     *  只予許 特定區號 白名單
      */
     private static function baseFilter( $items )
     {
+        $allowList = array("213","310","323","424","562","626","661","714","760","805","818","909","949");
         $result = array();
         foreach ( $items as $item ) {
-        
             if ( $item['id']=='1-800-701-4026' ) {
                 continue;
             }
-        
+            if ( !$item['phone'] ) {
+                continue;
+            }
+            if ( in_array( substr($item['phone'],0,3), $allowList ) ) {
+                continue;
+            }
             $result[] = $item;
         }
         return $result;
@@ -78,7 +84,7 @@ class TollfreeforwardingHelper
     /**
      *  統計資料
      *      - conv    -> 每通電話  61秒 以上 @*1
-     *      - revenue -> 每通電話 181秒 以上 @*50
+     *      - revenue -> 每通電話 241秒 以上 @*50
      */
     private static function statisticById( $items )
     {
@@ -94,7 +100,7 @@ class TollfreeforwardingHelper
                 );
             }
 
-            if ( $item['second'] >=181 ) {
+            if ( $item['second'] >= 241 ) {
                 // 單位為 50
                 $stat[$key]['revenue'] += 50;
             }
