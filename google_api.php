@@ -200,7 +200,7 @@ function updateByFacebook( $row, $header )
     $facebookData = getFacebookData();
 
     // create new cvs contents
-    ArrayIndex::set($facebookData['cost']);
+    ArrayIndex::set($facebookData);
     $contents = array();
 
     CsvManager::init();
@@ -214,7 +214,8 @@ function updateByFacebook( $row, $header )
     if ( null !== $index ) {
         $row['cost']        = ArrayIndex::get($index, 'spend');
         $row['impressions'] = ArrayIndex::get($index, 'reach');
-        $row['clicks']      = ArrayIndex::get($index, 'clicks');
+      //$row['clicks']      = ArrayIndex::get($index, 'clicks');  // 改用下面的值
+        $row['clicks']      = ArrayIndex::get($index, 'inline_actions_comment');
     }
     return $row;
 }
@@ -269,7 +270,7 @@ function updateByTollfreeforwarding( $row )
 
     $phoneNumbers = explode("||", $row['phonenum'] );
     foreach ( $phoneNumbers as $number ) {
-    $index = ArrayIndex::getIndexByHasString('id', $number);
+        $index = ArrayIndex::getIndexByHasString('id', $number);
         if ( null !== $index ) {
             $row['conv']    += ArrayIndex::get($index, 'conv');
             $row['revenue'] += ArrayIndex::get($index, 'revenue');

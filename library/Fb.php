@@ -29,10 +29,32 @@ class Fb
         Api::init( $this->id, $this->secret, $token );
         $api = Api::instance();
 
-        $result = array();
-        $result['cost'] = $this->getCost();
-        //$result['objective'] = $this->getObjective();
-        return $result;
+        $costItems = $this->getCost();
+
+        // match and get
+        $campaignIdItems = $this->getCampaignIds();
+        foreach ( $costItems as $index => $item ) {
+            foreach ( $campaignIdItems as $campaignIdItem ) {
+                if ( $item['group_name'] == $campaignIdItem['group_name'] ) {
+                    $costItems[$index]['campaign_id'] = $campaignIdItem['campaign_id'];
+                    break;
+                }
+            }
+        }
+
+        // match and get
+        $adGroupStats = $this->getAdGroupStats();
+        foreach ( $costItems as $index => $item ) {
+            foreach ( $adGroupStats as $adGroupStatItem ) {
+                if ( $item['campaign_id'] == $adGroupStatItem['campaign_id'] ) {
+                    $costItems[$index]['inline_actions_comment'] = $adGroupStatItem['inline_actions']['comment'];
+                    break;
+                }
+            }
+        }
+
+        //$objectiveItems  = $this->getObjective();
+        return $costItems;
     }
 
     /**
@@ -49,9 +71,9 @@ class Fb
             'day_end'      => array('year'=>'2015','month'=>'4','day'=>'1'),
             */
             'date_preset'  => 'yesterday',
-            'data_columns' => array('spend','campaign_group_name','reach','clicks'), // 'campaign_group_id'
+            'data_columns' => array('spend','campaign_group_name','reach','clicks'),
         );
-        
+
         $stats = $account->getReportsStats($fields, $params);
         $result = array();
         foreach($stats as $stat) {
@@ -68,10 +90,53 @@ class Fb
     /**
      *
      */
+    public function getCampaignIds()
+    {
+        $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
+        $fields = array();
+        $params = array(
+            'date_preset'  => 'yesterday',
+            'data_columns' => array('campaign_group_name','campaign_id'),
+        );
+
+        $stats = $account->getReportsStats($fields, $params);
+        $result = array();
+        foreach($stats as $stat) {
+            $result[] = array(
+                'campaign_id' => $stat->campaign_id,
+                'group_name'  => $stat->campaign_group_name,
+            );
+        }
+        return $result;
+    }
+
+    /**
+     *
+     */
+    public function getAdGroupStats()
+    {
+        $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
+        $fields = array();
+        $params = array(
+            'start_time'   => date('Y-m-d', $this->getDay(-1)),
+            'end_time'     => date('Y-m-d', $this->getDay()),
+        );
+
+        $stats = $account->getAdGroupStats($fields, $params);
+        $result = array();
+        foreach($stats as $stat) {
+            $result[] = array(
+                'inline_actions' => $stat->inline_actions,
+                'campaign_id'    => $stat->campaign_id,
+                'start_time'     => $stat->start_time,
+                'end_time'       => $stat->end_time,
+            );
+        }
+        return $result;
+    }
+
     /*
-
     TODO: 找不到相同的 account_id 值, 所以暫時註解起來, 確定無法使用時, 可以刪除此區塊
-
     public function getObjective()
     {
         $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
@@ -113,6 +178,22 @@ class Fb
         }
 
         return $session;
+    }
+
+    /**
+     *  加減算日期的簡易函式, 以天為單位
+     *  
+     *  getDay()        // 今天
+     *  getDay(1)       // 明天
+     *  getDay(-30)     // 30天前
+     *  
+     *  @param  int $day
+     *  @return int
+     */
+    private function getDay( $day=0 )
+    {
+        $day = (int) $day;
+        return ( time() + ($day*86400) );
     }
 
 }
