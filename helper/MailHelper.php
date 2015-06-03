@@ -4,25 +4,22 @@ use Nette\Mail\SendmailMailer;
 
 class MailHelper
 {
-    public static function sendStart()
+    public static function sendStart( $message="kenshoo email by Simply Bridal" )
     {
         $subject = '[auto] kenshoo start - '. date("Y-m-d H:i:s");
-        $body    = "kenshoo email by Simply Bridal";
-        self::send($subject, $body);
+        self::send($subject, $message);
     }
 
-    public static function sendSuccess()
+    public static function sendSuccess( $message="kenshoo email by Simply Bridal" )
     {
         $subject = '[auto] kenshoo success - '. date("Y-m-d H:i:s");
-        $body    = "kenshoo email by Simply Bridal";
-        self::send($subject, $body);
+        self::send($subject, $message);
     }
 
-    public static function sendFail()
+    public static function sendFail( $message="kenshoo email by Simply Bridal" )
     {
         $subject = '[auto] kenshoo fail - '. date("Y-m-d H:i:s");
-        $body    = "kenshoo email by Simply Bridal";
-        self::send($subject, $body);
+        self::send($subject, $message);
     }
 
     /* --------------------------------------------------------------------------------

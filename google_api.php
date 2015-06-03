@@ -113,11 +113,13 @@ function upgradeGoogleSheet()
 {
     $token = GoogleApiHelper::getToken();
     if ( !$token ) {
+        Log::record(date("Y-m-d H:i:s", time()) . ' - token error' );
         die('token error!');
     }
 
     $worksheet = GoogleApiHelper::getWorksheet( APPLICATION_GOOGLE_SPREADSHEETS_BOOK, APPLICATION_GOOGLE_SPREADSHEETS_SHEET, $token );
     if ( !$worksheet ) {
+        Log::record(date("Y-m-d H:i:s", time()) . ' - worksheet not found' );
         die('worksheet not found!');
     }
 
@@ -146,7 +148,15 @@ function upgradeGoogleSheet()
             // not setting to sheet
         }
         else {
-            $sheet->setRow($i, $row);
+
+            try {
+                $sheet->setRow($i, $row);
+            } catch ( Exception $e) {
+                Log::record(date("Y-m-d H:i:s", time()) . ' - '. $e->getMessage() );
+                MailHelper::sendFail(  $e->getMessage() );
+                exit;
+            }
+
         }
 
         // debug
@@ -155,8 +165,8 @@ function upgradeGoogleSheet()
             ob_flush(); flush();
         }
     }
-    echo "\n";
 
+    echo "\n";
 }
 
 /**
