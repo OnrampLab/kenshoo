@@ -51,3 +51,9 @@ composer install
     crontab -e
     /usr/local/bin/casperjs /var/www/kenshoo/casperjs/pinterest-login-and-download-csv.js >> /var/www/kenshoo/tmp/casperjs.log
 ```
+
+### 啟動 worker
+```sh
+    cd queue/
+    php failCall.gearman-worker.php &
+```

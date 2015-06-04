@@ -37,6 +37,8 @@ require_once 'helper/GoogleSheetdownloadHelper.php';
 require_once 'helper/TollfreeforwardingHelper.php';
 require_once 'helper/PinterestHelper.php';
 require_once 'helper/MailHelper.php';
+require_once 'queue/QueueBrg.php';
+require_once 'queue/QueueBrgGearmanClient.php';
 require_once 'uploadHelper.php';
 require_once 'downloadHelper.php';
 
@@ -154,6 +156,8 @@ function upgradeGoogleSheet()
             } catch ( Exception $e) {
                 Log::record(date("Y-m-d H:i:s", time()) . ' - '. $e->getMessage() );
                 MailHelper::sendFail(  $e->getMessage() );
+                $client = QueueBrg::factoryClient();
+                $client->push('failCall', array() );
                 exit;
             }
 
