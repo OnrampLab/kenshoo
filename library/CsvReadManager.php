@@ -28,6 +28,10 @@ class CsvReadManager
      */
     public function __construct( $csvFile, $autoSetHeader=true )
     {
+        if ( !file_exists($csvFile) ) {
+            return;
+        }
+
         if (($this->handle = fopen($csvFile, 'r')) === false) {
             return;
         }
@@ -66,6 +70,10 @@ class CsvReadManager
      */
     public function generator()
     {
+        if ( !$this->handle ) {
+            return null;
+        }
+
         while (true) {
             $row = fgetcsv($this->handle);
             if ( !$row || !is_array($row) ) {
