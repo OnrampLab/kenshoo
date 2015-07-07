@@ -56,4 +56,6 @@ composer install
 ```sh
     cd queue/
     php failCall.gearman-worker.php &
+    or
+    /root/.phpbrew/php/php-5.6.*/bin/php -q failCall.gearman-worker.php &
 ```
