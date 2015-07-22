@@ -21,6 +21,7 @@ class Fb
     {
         $session = $this->getSession();
         if ( !$session ) {
+            Log::record(date("Y-m-d H:i:s", time()) . ' - Facebook session error');
             die('error!');
         }
 
