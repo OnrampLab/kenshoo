@@ -1,10 +1,8 @@
 <?php
 
 use Facebook\FacebookSession;
-
 use FacebookAds\Api;
 use FacebookAds\Object\AdAccount;
-
 
 class Fb
 {
@@ -19,11 +17,13 @@ class Fb
 
     public function get()
     {
+        /*
         $session = $this->getSession();
         if ( !$session ) {
             Log::record(date("Y-m-d H:i:s", time()) . ' - Facebook session error');
             die('error!');
         }
+        */
 
         // TODO: 目前沒辦法取得永久的 token 值, 暫時要使用人工設定的方式來處理, 請統一一個時間來調整時間, 例如每個月的第一個工作天
         $token = APPLICATION_FACEBOOK_LONG_TOKEN;
@@ -54,8 +54,180 @@ class Fb
             }
         }
 
+
+/*
+        $fb = new Facebook\Facebook([
+            'app_id'                => $this->id,
+            'app_secret'            => $this->secret,
+            'default_graph_version' => 'v2.4',
+        ]);
+        $fb->setDefaultAccessToken(APPLICATION_FACEBOOK_LONG_TOKEN);
+        $actId = 'act_' . APPLICATION_FACEBOOK_ACT_ID;
+
         //$objectiveItems  = $this->getObjective();
+        print_r($this->getActiveItems($fb, $actId));
+        exit;
+*/
+
         return $costItems;
+    }
+
+    /**
+     *
+     */
+    public function getActiveItems($fb, $actId)
+    {
+
+        try {
+            //echo date("Y-m-d", time()-);
+            $fields = "name,campaign_group_status,insights{campaign_group_name,spend,reach,actions}";
+            $date = date("Y-m-d", strtotime("-1 day"));
+            $url = "/{$actId}/adcampaign_groups?fields={$fields}&campaign_group_status=['ACTIVE']&time_range={'since':'{$date}','until':'{$date}'}&limit=5";
+            
+            // $url = "act_112950872167640/adcampaign_groups?fields=name,campaign_group_status,insights{actions}";
+            $url = $actId . '/insights?level=adgroup&fields=campaign_group_name,spend,reach,actions&time_range={"since":"2015-08-02","until":"2015-08-02"}';
+
+            // try it about ACTIVE ( 五百多筆)
+            $url = '/act_112950872167640/insights?level=adgroup&fields=campaign_group_name,spend,reach,actions&campaign_status=["ACTIVE"]&time_range={"since":"2015-08-02","until":"2015-08-02"}';
+
+
+            $url = '/act_112950872167640/insights?level=adgroup&fields=campaign_group_name' . '&time_range={"since":"2015-08-02","until":"2015-08-02"}';
+
+            echo $url;
+            echo "\n";
+
+          //$response = $fb->get('/'. $actId .'/adcampaign_groups?fields=name,campaign_group_status,insights{campaign_group_name,spend,reach,actions}&limit=5&campaign_group_status=["ACTIVE"]&date_preset=yesterday&limit=5');
+          //$response = $fb->get('/'. $actId .'/adcampaign_groups?fields=name,campaign_group_status=ACTIVE,insights{campaign_group_name,spend,reach,actions}&limit=5&date_preset=yesterday&limit=5');
+            $response = $fb->get($url);
+            
+        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+            // When Graph returns an error
+            $message = 'Graph returned an error: ' . $e->getMessage();
+            echo $message;
+            Log::record($message);
+            exit;
+        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+            // When validation fails or other local issues
+            $message =  'Facebook SDK returned an error: ' . $e->getMessage();
+            echo $message;
+            Log::record($message);
+            exit;
+        }
+
+        $total = 0;
+        $feed = $response->getGraphEdge();
+        foreach ($feed as $status) {
+            $total++;
+            print_r($status->asArray());
+        }
+
+
+        while( $nextFeed = $fb->next($feed) ) {
+            echo "---------------------------------( {$total} )--";
+            foreach ($nextFeed as $status) {
+                $total++;
+                print_r($status->asArray());
+            }
+        }
+
+        echo 'total = '.$total;
+
+    }
+
+    /**
+     *
+     */
+    public function getFacebookData()
+    {
+
+        try {
+            // Requires the "read_stream" permission
+            $act = 'act_' . APPLICATION_FACEBOOK_ACT_ID;
+          //$response = $fb->get('/'. $act .'/insights?level=adgroup&fields=spend,campaign_group_name,reach,actions&campaign_group_status=ACTIVE&date_preset=yesterday');
+          //$response = $fb->get('/'. $act .'/insights?level=adgroup&fields=spend,campaign_group_name,reach,actions&campaign_status=ACTIVE&date_preset=yesterday');
+          //$response = $fb->get('/'. $act .'/insights?level=adgroup&fields=spend,campaign_group_name,reach,actions&adgroup_status=[\'ACTIVE\']&date_preset=yesterday');
+
+          //$response = $fb->get('/'. $act .'/insights?level=adgroup&fields=spend,campaign_group_name,reach,actions&campaign_group_status{ACTIVE}&date_preset=yesterday');
+
+          //$response = $fb->get('/'. $act .'/insights?level=adgroup&fields=campaign_group_name,spend,reach,actions&campaign_group_status=["ACTIVE"]&date_preset=yesterday&limit=5');
+          
+          //$response = $fb->get('/'. $act .'/adcampaign_groups?fields=name,campaign_group_status,insights{campaign_group_name,spend,reach,actions}&limit=5&campaign_group_status=["ACTIVE"]&date_preset=yesterday&limit=5');
+          
+          //$response = $fb->get('/'. $act .'/adcampaign_groups?fields=name,campaign_group_status=ACTIVE,insights{campaign_group_name,spend,reach,actions}&limit=5&date_preset=yesterday&limit=5');
+
+          //$response = $fb->get('/'. $act .'/insights?level=adgroup&fields=campaign_group_name,spend,reach,actions&date_preset=yesterday&limit=5');
+            $response = $fb->get('/'. $act .'/insights?level=adgroup&fields=campaign_group_name,spend,reach,actions&limit=5&time_range={"since":"2015-08-02","until":"2015-08-02"}');
+
+          
+        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+            // When Graph returns an error
+            $message = 'Graph returned an error: ' . $e->getMessage();
+            echo $message;
+            Log::record($message);
+            exit;
+        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+            // When validation fails or other local issues
+            $message =  'Facebook SDK returned an error: ' . $e->getMessage();
+            echo $message;
+            Log::record($message);
+            exit;
+        }
+
+        $total = 0;
+        $feed = $response->getGraphEdge();
+        foreach ($feed as $status) {
+            $total++;
+            print_r($status->asArray());
+        }
+
+        /*
+                // Page 2 (next 5 results)
+                while( $nextFeed = $fb->next($feed) ) {
+                    echo "---------------------------------( {$total} )--";
+                    foreach ($nextFeed as $status) {
+                        $total++;
+                        print_r($status->asArray());
+                    }
+                }
+        */
+        exit;
+
+
+
+
+        $account = new AdAccount('act_' . APPLICATION_FACEBOOK_ACT_ID);
+        $fields = array();
+        $params = array(
+            /*
+            // 未經測試，很有可能無法執行
+            'day_start'    => array('year'=>'2015','month'=>'4','day'=>'1'),
+            'day_end'      => array('year'=>'2015','month'=>'4','day'=>'1'),
+            */
+            'date_preset'  => 'yesterday',
+          //'data_columns' => array('spend','campaign_group_name','reach','clicks'),
+            'data_columns' => array('name','campaign_group_status','insights','spend','campaign_group_name','reach','clicks'),
+        );
+
+        $adsData = $account->getAdCampaigns($fields, $params);
+        $adsData = $account->getAdGroups($fields, $params);
+        //print_r($adsData);
+        //exit;
+
+
+        $result = array();
+        foreach($adsData as $data) {
+            print_r($data);
+            echo '-----------------------------------------------------------';
+            continue;          
+            exit;
+            $result[] = array(
+                'group_name' => $stat->campaign_group_name,
+                'spend'      => $stat->spend,
+                'reach'      => $stat->reach,
+                'clicks'     => $stat->clicks,
+            );
+        }
+        return $result;
     }
 
     /**
@@ -162,23 +334,31 @@ class Fb
 
     private function getSession()
     {
-        FacebookSession::setDefaultApplication( $this->id, $this->secret );
-        $session = FacebookSession::newAppSession();
+        $fb = new Facebook\Facebook([
+            'app_id'                => $this->id,
+            'app_secret'            => $this->secret,
+            'default_graph_version' => 'v2.4',
+        ]);
 
-        // To validate the session:
         try {
-            $session->validate();
-        } catch (FacebookRequestException $ex) {
-            // Session not valid, Graph API returned an exception with the reason.
-            Log::record($ex->getMessage());
-            return null;
-        } catch (\Exception $ex) {
-            // Graph API returned info, but it may mismatch the current app or have expired.
-            Log::record($ex->getMessage());
-            return null;
+            $accessToken = $fb->getApp()->getAccessToken();
+        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+            // When Graph returns an error
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+            // When validation fails or other local issues
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
         }
 
-        return $session;
+        if (! isset($accessToken)) {
+            echo 'No OAuth data could be obtained from the signed request. User has not authorized your app yet.';
+            exit;
+        }
+
+        return $accessToken;
+
     }
 
     /**
