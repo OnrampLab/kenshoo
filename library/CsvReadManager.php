@@ -2,7 +2,7 @@
 /**
  *  管理 csv
  *  只讀取資料, 不會反寫回 csv file
- *  使用 yeild , 所以 PHP 版本必須 >= 5.5 (??????)
+ *  使用 yield , 所以 PHP 版本必須 >= 5.5 (??????)
  *  改良自 CsvManager
  */
 class CsvReadManager
