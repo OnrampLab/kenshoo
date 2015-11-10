@@ -133,9 +133,9 @@ function upgradeGoogleSheet()
     for ( $i=0; $i<$count; $i++ ) {
 
         $row = $sheet->getRow($i);
-
-        // 無論如何都必須修改的值
         $row = filterUnusedCode($row);
+
+        //
         $row = updateDate($row);
 
         // 在 Override = 1 的情況要下修改的值
@@ -152,27 +152,52 @@ function upgradeGoogleSheet()
             // not setting to sheet
         }
         else {
+            // 如果內容完全相同, 就不需要更新
+            // 為了達到該效果, int 需要轉化為 string
+            $originRow = $sheet->getRow($i);
 
-            try {
-                $sheet->setRow($i, $row);
-            } catch ( Exception $e) {
-                Log::record(date("Y-m-d H:i:s", time()) . ' - '. $e->getMessage() );
-                MailHelper::sendFail(  $e->getMessage() );
-                $client = QueueBrg::factoryClient();
-                $client->push('failCall', array() );
-                exit;
+            if ( md5(serialize($originRow)) === md5(serialize($row)) ) {
+                echo "({$i}-same) ";
             }
-
+            else {
+                $result = writeSheet($row, $i, $sheet);
+                if ($result) {
+                    echo "{$i} ";
+                }
+                else {
+                    echo "({$i}-udpate-fail) ";
+                }
+            }
         }
 
-        // debug
-        echo $i. ' ';
-        if (PHP_SAPI !== 'cli') {
+        // show message
+        if (!isCli()) {
             ob_flush(); flush();
         }
+
     }
 
-    echo "\n";
+    show('');
+}
+
+/**
+ *  資料寫入 google sheet
+ *  @return true=有寫入, false=無寫入
+ */
+function writeSheet($row, $index, $sheet)
+{
+    try {
+        $sheet->setRow($index, $row);
+    }
+    catch ( Exception $e) {
+        show($e->getMessage(), true);
+        MailHelper::sendFail($e->getMessage());
+        $client = QueueBrg::factoryClient();
+        $client->push('failCall', array() );
+        exit;
+    }
+
+    return true;
 }
 
 /**
@@ -213,9 +238,9 @@ function updateDate( $row )
  */
 function updateByFacebook( $row, $header )
 {
-    $row['impressions'] = 0;
-    $row['clicks']      = 0;
-    $row['cost']        = 0;
+    $row['impressions'] = (string) 0;
+    $row['clicks']      = (string) 0;
+    $row['cost']        = (string) 0;
 
     $items = getFacebookItems();
     foreach ($items as $item) {
@@ -301,5 +326,7 @@ function updateByTollfreeforwarding( $row )
         }
     }
 
+    $row['conv']    = (string) $row['conv']   ;
+    $row['revenue'] = (string) $row['revenue'];
     return $row;
 }

@@ -30,3 +30,8 @@ function show($data, $writeLog=false )
         Log::record($data);
     }
 }
+
+function isCli()
+{
+    return PHP_SAPI === 'cli';
+}
