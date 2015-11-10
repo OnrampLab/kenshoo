@@ -11,32 +11,30 @@ if (PHP_SAPI !== 'cli') {
         echo "Deny";
         exit;
     }
-    echo '<pre>';
+    echo "<pre>\n";
 }
 
 define("IS_DEBUG", false );
-error_reporting(E_ALL);
-ini_set('html_errors','On');
-ini_set('display_errors','On');
 
 //echo ini_get("memory_limit"); exit;
 //echo ini_set("memory_limit","2048M");
 
-require_once 'config.php';
-date_default_timezone_set(APPLICATION_TIMEZONE);
 
-require_once 'vendor/autoload.php';
-require_once 'library/Log.php';
+
+$basePath = __DIR__;
+require_once 'helper/bootstrap.php';
+initialize($basePath);
+
 require_once 'library/CsvManager.php';
 require_once 'library/CsvReadManager.php';
 require_once 'library/ArrayIndex.php';
-require_once 'library/Fb.php';
 require_once 'library/GoogleApiHelper.php';
 require_once 'library/GoogleWorksheetManager.php';
 require_once 'helper/GoogleSheetdownloadHelper.php';
 require_once 'helper/TollfreeforwardingHelper.php';
 require_once 'helper/PinterestHelper.php';
 require_once 'helper/MailHelper.php';
+require_once 'helper/FacebookHelper.php';
 require_once 'queue/QueueBrg.php';
 require_once 'queue/QueueBrgGearmanClient.php';
 require_once 'uploadHelper.php';
@@ -50,9 +48,12 @@ exit;
  */
 function perform()
 {
-    Log::record(date("Y-m-d H:i:s", time()) . ' - start PHP '. phpversion() );
+    if ( phpversion() < '5.5' ) {
+        show("PHP Version need >= 5.5", true);
+        exit;
+    }
 
-    //
+    Log::record('start PHP '. phpversion() );
     upgradeGoogleSheet();
 
     //    
@@ -113,16 +114,17 @@ function uploadCsvFile( $pathFile )
  */
 function upgradeGoogleSheet()
 {
+
     $token = GoogleApiHelper::getToken();
     if ( !$token ) {
-        Log::record(date("Y-m-d H:i:s", time()) . ' - token error' );
-        die('token error!');
+        show('token error!', true);
+        exit;
     }
 
     $worksheet = GoogleApiHelper::getWorksheet( APPLICATION_GOOGLE_SPREADSHEETS_BOOK, APPLICATION_GOOGLE_SPREADSHEETS_SHEET, $token );
     if ( !$worksheet ) {
-        Log::record(date("Y-m-d H:i:s", time()) . ' - worksheet not found' );
-        die('worksheet not found!');
+        show('worksheet not found', true);
+        exit;
     }
 
     $sheet = new GoogleWorksheetManager($worksheet);
@@ -211,27 +213,35 @@ function updateDate( $row )
  */
 function updateByFacebook( $row, $header )
 {
-    $facebookData = getFacebookData();
+    $row['impressions'] = 0;
+    $row['clicks']      = 0;
+    $row['cost']        = 0;
 
-    // create new cvs contents
-    ArrayIndex::set($facebookData);
-    $contents = array();
-
-    CsvManager::init();
-    CsvManager::setHeader($header);
-    CsvManager::setFilter(array(
-        'cost' => 'float',
-        'fb-objective' => 'int'
-    ));
-
-    $index = ArrayIndex::getIndex('group_name', $row['campaign']);
-    if ( null !== $index ) {
-        $row['cost']        = ArrayIndex::get($index, 'spend');
-        $row['impressions'] = ArrayIndex::get($index, 'reach');
-      //$row['clicks']      = ArrayIndex::get($index, 'clicks');  // 改用下面的值
-        $row['clicks']      = ArrayIndex::get($index, 'inline_actions_comment');
+    $items = getFacebookItems();
+    foreach ($items as $item) {
+        if ($row['campaign'] == $item['name']) {
+            $row['cost']        = (string) (double) $item['spend'];
+            $row['impressions'] = (string) (double) $item['impressions'];
+            $row['clicks']      = (string) (double) $item['action_comment'];
+            break;
+        }
     }
+
     return $row;
+}
+
+/**
+ *  cache facebook data
+ */
+function getFacebookItems()
+{
+    static $result;
+    if ($result) {
+        return $result;
+    }
+
+    $result = FacebookHelper::getItems();
+    return $result;
 }
 
 /**
@@ -292,19 +302,4 @@ function updateByTollfreeforwarding( $row )
     }
 
     return $row;
-}
-
-/**
- *  cache facebook data
- */
-function getFacebookData()
-{
-    static $result;
-    if ( $result ) {
-        return $result;
-    }
-
-    $fb = new Fb(APPLICATION_FACEBOOK_ID, APPLICATION_FACEBOOK_SECRET);
-    $result = $fb->get();
-    return $result;
 }

@@ -1,5 +1,8 @@
 <?php
 
+echo "已停止使用!!";
+exit;
+
 use Facebook\FacebookSession;
 use FacebookAds\Api;
 use FacebookAds\Object\AdAccount;

@@ -2,12 +2,23 @@
 
 class Log
 {
+
+    protected static $_logPath = null;
+
+    /**
+     *  init
+     */
+    public static function init( $logPath )
+    {
+        self::$_logPath = $logPath;
+    }
+
     /**
      *  error log
      */
     public static function getPath()
     {
-        return APPLICATION_DIR .'/tmp';
+        return self::$_logPath;
     }
 
     /**
