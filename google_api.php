@@ -270,10 +270,13 @@ function getFacebookItems()
 }
 
 /**
- *
+ *  NOTE: Pinterest 目前已停用
  */
 function updateByPinterest( $row )
 {
+    return $row;
+    exit;
+
     static $pinterestRows;
     if ( !$pinterestRows ) {
         $pinterestRows = PinterestHelper::getAllRows();

@@ -33,7 +33,7 @@ class PinterestHelper
             }
             $dateInt = strtotime($item['date']);
             $rows[] = array(
-                'campaign'    => $item['campaign'],
+                'campaign'    => $item['campaign_id'],
                 'name'        => $item['name'],
                 'date'        => $dateInt,
                 'spend'       => $item['spend'],
