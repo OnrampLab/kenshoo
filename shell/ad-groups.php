@@ -163,70 +163,13 @@ function appendRow($row, $sheet)
 }
 
 /**
- *  資料寫入 google sheet
- *  @return true=有寫入, false=無寫入
- */
-function writeSheet($row, $index, $sheet)
-{
-    try {
-        $sheet->setRow($index, $row);
-    }
-    catch ( Exception $e) {
-        show($e->getMessage(), true);
-        MailHelper::sendFail($e->getMessage());
-        $client = QueueBrg::factoryClient();
-        $client->push('failCall', array() );
-        exit;
-    }
-
-    return true;
-}
-
-
-/**
- *
+ *  NOTE: 請正確設定 google sheet 的時區
  */
 function updateDate( $row )
 {
     $row['date'] = date("n/j/Y", time());
   //$row['date'] = date('n/j/Y', strtotime($row['date'] . ' - 1 day'));
     return $row;
-}
-
-/**
- *
- */
-function updateByFacebook( $row, $header )
-{
-    $row['impressions'] = (string) 0;
-    $row['clicks']      = (string) 0;
-    $row['cost']        = (string) 0;
-
-    $items = getFacebookItems();
-    foreach ($items as $item) {
-        if ($row['campaign'] == $item['name']) {
-            $row['cost']        = (string) (double) $item['spend'];
-            $row['impressions'] = (string) (double) $item['impressions'];
-            $row['clicks']      = (string) (double) $item['action_comment'];
-            break;
-        }
-    }
-
-    return $row;
-}
-
-/**
- *  cache facebook data
- */
-function getFacebookItems()
-{
-    static $result;
-    if ($result) {
-        return $result;
-    }
-
-    $result = FacebookHelper::getItems();
-    return $result;
 }
 
 /**
