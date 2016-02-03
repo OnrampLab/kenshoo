@@ -18,6 +18,9 @@ composer install
             libpng-dev libjpeg-dev
 ```
 
+### 請正確設定試算表時區
+- [setting timezime](https://support.google.com/docs/answer/58515?hl=zh-Hant)
+
 ### 使用 node 安裝 casperjs & phantomjs
 ```sh
     sudo apt-get update

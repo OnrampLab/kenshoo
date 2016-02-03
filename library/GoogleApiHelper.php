@@ -55,4 +55,44 @@ class GoogleApiHelper
         return $worksheets->getByTitle($page);
     }
 
+    /**
+     *  @return worksheet or false
+     */
+    public static function createWorksheet( $book, $page, $token )
+    {
+        $serviceRequest = new DefaultServiceRequest($token);
+        ServiceRequestFactory::setInstance($serviceRequest);
+
+        $spreadsheetService = new Google\Spreadsheet\SpreadsheetService();
+        $spreadsheetFeed = $spreadsheetService->getSpreadsheets();
+
+        $spreadsheet = $spreadsheetFeed->getByTitle($book);
+        if ( !$spreadsheet ) {
+            return false;
+        }
+
+        try {
+            $worksheet = $spreadsheet->addWorksheet($page, 5, 26);
+        }
+        catch (Exception $e) {
+            // show( $e->getMessage() );
+            return false;
+        }
+
+        return $worksheet;
+    }
+
+    /**
+     *  @return boolean
+     */
+    public static function deleteWorksheet( $book, $page, $token )
+    {
+        $worksheet = self::getWorksheet($book, $page, $token);
+        if (!$worksheet) {
+            return false;
+        }
+        $worksheet->delete();
+        return true;
+    }
+
 }

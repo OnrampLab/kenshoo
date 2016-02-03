@@ -1,5 +1,6 @@
 /casperjs/config/config.js
-config.php
+/app/config/*.php
+/config.php
 *.log
 /tmp
 /upload
