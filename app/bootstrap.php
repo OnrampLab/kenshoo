@@ -11,24 +11,24 @@ function initialize($basePath)
 
     require_once $basePath . '/vendor/autoload.php';
 
-    require_once $basePath . '/library/Log.php';
+    require_once $basePath . '/app/library/Log.php';
     Log::init(   $basePath . '/tmp');
 
     require_once $basePath . '/app/library/GoogleWorksheetManager.php';
+    require_once $basePath . '/app/library/CsvManager.php';
+    require_once $basePath . '/app/library/CsvReadManager.php';
+    require_once $basePath . '/app/library/ArrayIndex.php';
+    require_once $basePath . '/app/library/GoogleApiHelper.php';
+
     require_once $basePath . '/app/helper/DownloadHelper.php';
     require_once $basePath . '/app/helper/FacebookHelper.php';
+    require_once $basePath . '/app/helper/TollfreeforwardingHelper.php';
+    require_once $basePath . '/app/helper/PinterestHelper.php';
+    require_once $basePath . '/app/helper/MailHelper.php';
+    require_once $basePath . '/app/helper/uploadHelper.php';
 
-    require_once $basePath . '/library/CsvManager.php';
-    require_once $basePath . '/library/CsvReadManager.php';
-    require_once $basePath . '/library/ArrayIndex.php';
-    require_once $basePath . '/library/GoogleApiHelper.php';
-    require_once $basePath . '/helper/TollfreeforwardingHelper.php';
-    require_once $basePath . '/helper/PinterestHelper.php';
-    require_once $basePath . '/helper/MailHelper.php';
     require_once $basePath . '/queue/QueueBrg.php';
     require_once $basePath . '/queue/QueueBrgGearmanClient.php';
-    require_once $basePath . '/uploadHelper.php';
-
 }
 
 function show($data, $writeLog=false )
