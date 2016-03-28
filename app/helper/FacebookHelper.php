@@ -7,74 +7,105 @@ class FacebookHelper
      */
     public static function getWrapCampaignLevel()
     {
-        $result = self::_getCampaignLevel();
-        // show($result); exit;
-
         $items = [];
-        foreach ($result['data'] as $data) {
+        $after = '';
 
-            if (!isset($data['campaign_id'])) {
-                continue;
-            }
-            if (!isset($data['campaign_name'])) {
-                continue;
-            }
+        do {
+            $result = self::_getCampaignLevel($after);
+            // show($result); exit;
 
-            $item = [];
-            $item['campaign_id']    = $data['campaign_id'];
-            $item['campaign_name']  = $data['campaign_name'];
-            $item['impressions']    = isset($data['impressions']) ? $data['impressions'] : null;
-            $item['spend']          = isset($data['spend'])       ? $data['spend']       : null;
-            $item['action_comment'] = (string) (double) null;
+            foreach ($result['data'] as $data) {
 
-            if (isset($data['actions'])) {
-                foreach ($data['actions'] as $actions) {
-                    $key = 'action_' . $actions['action_type'];
-                    $item[$key] = $actions['value'];
+                if (!isset($data['campaign_id'])) {
+                    continue;
                 }
+                if (!isset($data['campaign_name'])) {
+                    continue;
+                }
+
+                $item = [];
+                $item['campaign_id']    = $data['campaign_id'];
+                $item['campaign_name']  = $data['campaign_name'];
+                $item['impressions']    = isset($data['impressions']) ? $data['impressions'] : null;
+                $item['spend']          = isset($data['spend'])       ? $data['spend']       : null;
+                $item['action_comment'] = (string) (double) null;
+
+                if (isset($data['actions'])) {
+                    foreach ($data['actions'] as $actions) {
+                        $key = 'action_' . $actions['action_type'];
+                        $item[$key] = $actions['value'];
+                    }
+                }
+
+                $items[] = $item;
             }
 
-            $items[] = $item;
-        }
+            if (!$after) {
+                break;
+            }
+
+        } while(true);
+
         // show($items); exit;
         return $items;
     }
 
     public static function getWrapAdsetLevel()
     {
-        $result = self::_getAdsetLevel();
-        // show($result); exit;
-
         $items = [];
-        foreach ($result['data'] as $data) {
+        $after = '';
 
-            if (!isset($data['campaign_id'])) {
-                continue;
-            }
-            if (!isset($data['campaign_name'])) {
-                continue;
-            }
-            if (!isset($data['adset_name'])) {
-                continue;
+        do {
+            $result = self::_getAdsetLevel($after);
+            // show($result); exit;
+
+            $after = '';
+            if (
+                isset($result['paging']) &&
+                isset($result['paging']['next']) &&
+                isset($result['paging']['cursors']) &&
+                isset($result['paging']['cursors']['after'])
+            ) {
+                $after = $result['paging']['cursors']['after'];
             }
 
-            $item = [];
-            $item['campaign_id']    = $data['campaign_id'];
-            $item['campaign_name']  = $data['campaign_name'];
-            $item['adset_name']     = $data['adset_name'];
-            $item['impressions']    = isset($data['impressions']) ? $data['impressions'] : null;
-            $item['spend']          = isset($data['spend'])       ? $data['spend']       : null;
-            $item['action_comment'] = (string) (double) null;
+            foreach ($result['data'] as $data) {
 
-            if (isset($data['actions'])) {
-                foreach ($data['actions'] as $actions) {
-                    $key = 'action_' . $actions['action_type'];
-                    $item[$key] = $actions['value'];
+                if (!isset($data['campaign_id'])) {
+                    continue;
                 }
+                if (!isset($data['campaign_name'])) {
+                    continue;
+                }
+                if (!isset($data['adset_name'])) {
+                    continue;
+                }
+
+                $item = [];
+                $item['campaign_id']    = $data['campaign_id'];
+                $item['campaign_name']  = $data['campaign_name'];
+                $item['adset_name']     = $data['adset_name'];
+                $item['impressions']    = isset($data['impressions']) ? $data['impressions'] : null;
+                $item['spend']          = isset($data['spend'])       ? $data['spend']       : null;
+                $item['action_comment'] = (string) (double) null;
+
+                if (isset($data['actions'])) {
+                    foreach ($data['actions'] as $actions) {
+                        $key = 'action_' . $actions['action_type'];
+                        $item[$key] = $actions['value'];
+                    }
+                }
+
+                $items[] = $item;
+            }
+            
+            if (!$after) {
+                break;
             }
 
-            $items[] = $item;
-        }
+        } while(true);
+
+
         // show($items); exit;
         return $items;
     }
@@ -147,7 +178,7 @@ class FacebookHelper
     /**
      *  campaigns sheet
      */
-    private static function _getCampaignLevel()
+    private static function _getCampaignLevel($after='')
     {
         // insights?fields=campaign_id,campaign_name,impressions,spend,actions&effective_status[]=ACTIVE&date_preset=yesterday&level=campaign
         $attachment = array(
@@ -155,7 +186,12 @@ class FacebookHelper
             'effective_status[]' => 'ACTIVE',
             'date_preset'        => 'yesterday',
             'level'              => 'campaign',
+            'limit'              => 25,
         );
+        if ($after) {
+            $attachment['after'] = $after;
+        }
+
         $result = self::facebookCurl('insights', $attachment);
         self::checkFacebookCurlResult($result, 'Facebook get campaigns error');
         return $result;
@@ -164,7 +200,7 @@ class FacebookHelper
     /**
      *  adset (AdGroups) sheet
      */
-    private static function _getAdsetLevel()
+    private static function _getAdsetLevel($after='')
     {
         // insights?fields=campaign_id,campaign_name,adset_name,impressions,spend,actions&effective_status[]=ACTIVE&date_preset=yesterday&level=adset
         $attachment = array(
@@ -172,7 +208,12 @@ class FacebookHelper
             'effective_status[]' => 'ACTIVE',
             'date_preset'        => 'yesterday',
             'level'              => 'adset',
+            'limit'              => 25,
         );
+        if ($after) {
+            $attachment['after'] = $after;
+        }
+
         $result = self::facebookCurl('insights', $attachment);
         self::checkFacebookCurlResult($result, 'Facebook get adsets error');
         return $result;
