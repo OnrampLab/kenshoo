@@ -167,8 +167,9 @@ function appendRow($row, $sheet)
  */
 function updateDate( $row )
 {
-    $row['date'] = date("n/j/Y", time());
+  //$row['date'] = date("n/j/Y", time());
   //$row['date'] = date('n/j/Y', strtotime($row['date'] . ' - 1 day'));
+    $row['date'] = date("n/j/Y", strtotime(date("n/j/Y") . ' - 1 day'));
     return $row;
 }
 
