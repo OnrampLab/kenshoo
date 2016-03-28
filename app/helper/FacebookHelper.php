@@ -15,14 +15,13 @@ class FacebookHelper
             // show($result); exit;
 
             foreach ($result['data'] as $data) {
-
                 if (!isset($data['campaign_id'])) {
                     continue;
                 }
                 if (!isset($data['campaign_name'])) {
                     continue;
                 }
-
+ 
                 $item = [];
                 $item['campaign_id']    = $data['campaign_id'];
                 $item['campaign_name']  = $data['campaign_name'];
@@ -43,8 +42,7 @@ class FacebookHelper
             if (!$after) {
                 break;
             }
-
-        } while(true);
+        } while (true);
 
         // show($items); exit;
         return $items;
@@ -70,7 +68,6 @@ class FacebookHelper
             }
 
             foreach ($result['data'] as $data) {
-
                 if (!isset($data['campaign_id'])) {
                     continue;
                 }
@@ -102,8 +99,7 @@ class FacebookHelper
             if (!$after) {
                 break;
             }
-
-        } while(true);
+        } while (true);
 
 
         // show($items); exit;
@@ -251,9 +247,9 @@ class FacebookHelper
                 'adsets' => []
             ];
 
-            if ( isset($tmp['adsets']) &&
+            if (isset($tmp['adsets']) &&
                  isset($tmp['adsets']['data']) &&
-                 is_array($tmp['adsets']['data']) ) {
+                 is_array($tmp['adsets']['data'])) {
                 $tmp['_custom']['adsets'] = array_column($tmp['adsets']['data'], 'id');
             }
             unset($tmp['adsets']);
@@ -271,7 +267,7 @@ class FacebookHelper
     private static function checkFacebookCurlResult($result, $errorMessage)
     {
         if (!is_array($result)) {
-            show( "{$errorMessage}: {$result}", true);
+            show("{$errorMessage}: {$result}", true);
             exit;
         }
 
@@ -281,5 +277,4 @@ class FacebookHelper
             exit;
         }
     }
-
 }
