@@ -114,10 +114,22 @@ function filterUnusedCode( $row )
     return $row;
 }
 
+/**
+ *  create csv content to file
+ */
+function writeCsvFile($pathFile, $content)
+{
+    DownloadHelper::contentToCsv($content, $pathFile);
+}
 
 /**
  *  create csv file
+ *
+ *      在 2016-05-15 當天發現, 如果在沒有登入 google account 的情況下
+ *      即使是公開的 spreadsheets, 也無法檢視
+ *      所以目前已停止該功能
  */
+/*
 function makeCsvFile($pathFile, $gid=0)
 {
     $key = APPLICATION_GOOGLE_KENSHOO_KEY;
@@ -128,6 +140,7 @@ function makeCsvFile($pathFile, $gid=0)
     $content = DownloadHelper::getByUrl($url);
     DownloadHelper::contentToCsv($content, $pathFile);
 }
+*/
 
 /**
  *  upload csv file

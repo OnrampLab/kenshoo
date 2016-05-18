@@ -44,13 +44,16 @@ function perform()
     Log::record('start PHP '. phpversion() );
 
     // create CSV file
-    $sheet = createGoogleSheet();
+    $manager = createGoogleSheet();
     $tmpCsvFileName = getTmpCsvFileName();
-    makeCsvFile($tmpCsvFileName, $sheet->getGid());
+    // makeCsvFile($tmpCsvFileName, $manager->getGid());
+    writeCsvFile($tmpCsvFileName, $manager->worksheet->getCsv());
 
-    // get campaign CSV file
+    // create campaign CSV file
     $campaigncsvFileName = getCampaignCsvFileName();
-    makeCsvFile($campaigncsvFileName, '976337387');
+    // makeCsvFile($campaigncsvFileName, '976337387');
+    $campaignWorksheet = getCampaignGoogleSheet();
+    writeCsvFile($campaigncsvFileName, $campaignWorksheet->getCsv());
 
     // merge
     $originCsv = file_get_contents($campaigncsvFileName);
@@ -74,10 +77,35 @@ function perform()
 /**
  *
  */
+function getCampaignGoogleSheet()
+{
+    $token = GoogleApiHelper::getToken();
+    if (!$token) {
+        show('token error!', true);
+        exit;
+    }
+
+    $worksheet = GoogleApiHelper::getWorksheet(
+        APPLICATION_GOOGLE_SPREADSHEETS_BOOK,
+        'campaign',
+        $token
+    );
+    if (!$worksheet) {
+        // 問題可能會出在 "無法刪除" 或 "無法建立"
+        show('Error: "campaign" sheet not found!', true);
+        exit;
+    }
+
+    return $worksheet;
+}
+
+/**
+ *
+ */
 function createGoogleSheet()
 {
     $token = GoogleApiHelper::getToken();
-    if ( !$token ) {
+    if (!$token) {
         show('token error!', true);
         exit;
     }
@@ -106,15 +134,15 @@ function createGoogleSheet()
         'date', 'channel', 'campaign', 'adgroup', 'keyword',
         'match_type', 'impressions', 'clicks', 'cost'
     ];
-    $sheet = new GoogleWorksheetManager($worksheet);
-    $sheet->createHeaders($headers);
+    $manager = new GoogleWorksheetManager($worksheet);
+    $manager->createHeaders($headers);
 
     // add data
     $items = getFacebookAdGroupsItems();
     $index = 0;
     foreach ($items as $item) {
 
-        $row = $sheet->buildRow();
+        $row = $manager->buildRow();
         $row = updateDate($row);
         // 注意, row 的名稱, 請自行去除 "_" 底線符號, google api 會過濾該符號
         $row['channel']     = '3090';
@@ -131,7 +159,7 @@ function createGoogleSheet()
 
         // add sheet row
         if (getParam('exec')) {
-            appendRow($row, $sheet);
+            appendRow($row, $manager);
         }
         echo ' ';
 
@@ -143,7 +171,7 @@ function createGoogleSheet()
     }
 
     show('');
-    return $sheet;
+    return $manager;
 }
 
 /**
