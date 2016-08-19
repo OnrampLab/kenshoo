@@ -21,7 +21,7 @@ class FacebookHelper
                 if (!isset($data['campaign_name'])) {
                     continue;
                 }
- 
+
                 $item = [];
                 $item['campaign_id']    = $data['campaign_id'];
                 $item['campaign_name']  = $data['campaign_name'];
@@ -95,7 +95,7 @@ class FacebookHelper
 
                 $items[] = $item;
             }
-            
+
             if (!$after) {
                 break;
             }
@@ -131,7 +131,7 @@ class FacebookHelper
         $attachment += array(
             'access_token' => APPLICATION_FACEBOOK_LONG_TOKEN,
         );
-        $url = "https://graph.facebook.com/v2.5/{$actId}/{$feed}?" . http_build_query($attachment);
+        $url = "https://graph.facebook.com/v2.6/{$actId}/{$feed}?" . http_build_query($attachment);
 
 
         exec('curl -i -X GET "'. $url .'" 2> /dev/null', $output);
