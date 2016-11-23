@@ -131,7 +131,7 @@ class FacebookHelper
         $attachment += array(
             'access_token' => APPLICATION_FACEBOOK_LONG_TOKEN,
         );
-        $url = "https://graph.facebook.com/v2.6/{$actId}/{$feed}?" . http_build_query($attachment);
+        $url = "https://graph.facebook.com/v2.8/{$actId}/{$feed}?" . http_build_query($attachment);
 
 
         exec('curl -i -X GET "'. $url .'" 2> /dev/null', $output);
