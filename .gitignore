@@ -1,5 +1,8 @@
-config.php
+/casperjs/config/config.js
+/app/config/*.php
+/config.php
 *.log
+/tmp
 /upload
 /vendor
 composer.lock
